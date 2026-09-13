@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:mishkah/screens/splash_screen.dart';
+
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MishkahApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MishkahApp extends StatelessWidget {
+  const MishkahApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'مشكاة',
+      home: const SplashScreen(),
     );
   }
 }
