@@ -7,7 +7,6 @@ import 'screens/dar/dar_details_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-
   await dotenv.load(fileName: '.env');
 
   await Supabase.initialize(
