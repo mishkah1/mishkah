@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mishkah/screens/halaqa/halaqa_registration_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/dar_model.dart';
 import '../../models/halaqa_model.dart';
@@ -52,8 +53,7 @@ class HalaqaDetailsScreen extends StatelessWidget {
                   _buildContactCard(),
                   const SizedBox(height: 22),
                   _buildRegisterButton(context),
-                  const SizedBox(height: 10),
-                  _buildDonateButton(),
+                  
                 ],
               ),
             ),
@@ -224,31 +224,19 @@ class HalaqaDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDonateButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton.icon(
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: _gold),
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-        onPressed: () {
-          // TODO: يربط لاحقا بصفحة تفاصيل التبرع
-        },
-        icon: const Icon(Icons.favorite_border,
-            color: Color(0xFF8A5A02), size: 17),
-        label: const Text(
-          'تبرع لدعم هذه الحلقة',
-          style: TextStyle(color: Color(0xFF8A5A02), fontSize: 14),
-        ),
-      ),
-    );
-  }
+  
 
 
-  Future<void> _handleRegister(BuildContext context) async {
+
+void _handleRegister(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => HalaqaRegistrationScreen(halaqa: halaqa),
+    ),
+  );
+}
+ /* Future<void> _handleRegister(BuildContext context) async {
     if (halaqa.hasRegistrationLink) {
       final uri = Uri.parse(halaqa.registrationUrl!);
       if (await canLaunchUrl(uri)) {
@@ -266,5 +254,6 @@ class HalaqaDetailsScreen extends StatelessWidget {
         ),
       );
     }
-  }
+  }*/
+
 }
