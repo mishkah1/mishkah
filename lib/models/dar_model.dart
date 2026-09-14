@@ -9,6 +9,7 @@ class DarModel {
   final String? websiteUrl;
   final String? imageUrl;
   final String? description;
+  final String? donationLink;
   final List<String> halaqaIds;
 
   DarModel({
@@ -21,11 +22,16 @@ class DarModel {
     this.websiteUrl,
     this.imageUrl,
     this.description,
+    this.donationLink,
     this.halaqaIds = const [],
   });
 
   /// يرجع true إذا كان للدار موقع إلكتروني فعلي.
   bool get hasWebsite => websiteUrl != null && websiteUrl!.trim().isNotEmpty;
+
+  /// يرجع true إذا كان للدار رابط تبرع فعلي.
+  bool get hasDonationLink =>
+      donationLink != null && donationLink!.trim().isNotEmpty;
 
   /// تحويل صف قادم من Supabase (snake_case) إلى كائن DarModel.
   factory DarModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +45,7 @@ class DarModel {
       websiteUrl: json['website_url'] as String?,
       imageUrl: json['image_url'] as String?,
       description: json['description'] as String?,
+      donationLink: json['donation_link'] as String?,
       // halaqaIds ما يجي من عمود بجدول dars مباشرة، يتم جلبه بطلب منفصل
       // من جدول halaqas عن طريق dar_id (شوفي DarRepository).
       halaqaIds: const [],
@@ -57,6 +64,7 @@ class DarModel {
       'website_url': websiteUrl,
       'image_url': imageUrl,
       'description': description,
+      'donation_link': donationLink,
     };
   }
 }
