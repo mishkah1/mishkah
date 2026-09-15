@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home/home_screen.dart';
+import 'package:mishkah/screens/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -81,7 +81,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => const LoginScreen(),
         ),
       );
     }
@@ -129,7 +129,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     fit: BoxFit.cover,
                     alignment: Alignment.topCenter,
                   ),
-
                   Positioned.fill(
                     child: IgnorePointer(
                       child: DecoratedBox(
@@ -160,7 +159,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       ),
                     ),
                   ),
-
                   if (currentPage > 0)
                     SafeArea(
                       child: Align(
@@ -181,7 +179,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         ),
                       ),
                     ),
-
                   Positioned(
                     left: 0,
                     right: 0,
