@@ -2,7 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:mishkah/models/dar_model.dart';
 import 'package:mishkah/models/halaqa_model.dart';
 import 'package:mishkah/repositories/dar_repository.dart';
+import 'package:mishkah/screens/menu/about_us_screen.dart' as about_us;
+import 'package:mishkah/screens/menu/contact_us_screen.dart';
+import 'package:mishkah/screens/menu/feq_screen.dart';
+import 'package:mishkah/screens/menu/settings_screen.dart';
+import 'package:mishkah/services/local_saved_service.dart';
+import 'package:mishkah/widgets/save_actions.dart';
 import 'package:mishkah/screens/account/account_screen.dart';
+import 'package:mishkah/screens/lectures/lectures_screen.dart';
+import 'package:mishkah/screens/donation/donation_details_screen.dart';
+import 'package:mishkah/screens/dar/dar_details_screen.dart';
+import 'package:mishkah/screens/dar/dars_screen.dart';
+import 'package:mishkah/screens/halaqa/halaqa_details_screen.dart';
+import 'package:mishkah/screens/notifications/notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,11 +24,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   final PageController registrationController = PageController(
     viewportFraction: 0.82,
   );
 
   final DarRepository repository = DarRepository();
+  final LocalSavedService savedService = LocalSavedService.instance;
 
   List<DarModel> dars = [];
   List<HalaqaModel> halaqas = [];
@@ -44,7 +59,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    savedService.addListener(onSavedItemsChanged);
     loadData();
+  }
+
+  void onSavedItemsChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> loadData() async {
@@ -83,21 +105,16 @@ class _HomeScreenState extends State<HomeScreen> {
         .toList();
   }
 
-  HalaqaModel? getDarHalaqa(RegistrationStatus status) {
-    final darHalaqas = halaqas
+  List<HalaqaModel> getDarHalaqas(RegistrationStatus status) {
+    return halaqas
         .where(
           (halaqa) =>
               halaqa.darId != null &&
               halaqa.darId!.isNotEmpty &&
-              halaqa.registrationStatus == status,
+              halaqa.registrationStatus == status &&
+              halaqa.attendanceType == AttendanceType.inPerson,
         )
         .toList();
-
-    if (darHalaqas.isEmpty) {
-      return null;
-    }
-
-    return darHalaqas.first;
   }
 
   DarModel? getDarById(String darId) {
@@ -110,12 +127,128 @@ class _HomeScreenState extends State<HomeScreen> {
     return null;
   }
 
+  HalaqaModel? chooseHalaqa(
+    List<HalaqaModel> candidates,
+    Set<String> usedIds,
+    Set<String> usedDarIds,
+    Set<AttendanceType> usedAttendance,
+  ) {
+    final available = candidates
+        .where((halaqa) => !usedIds.contains(halaqa.id))
+        .toList();
+
+    if (available.isEmpty) {
+      return null;
+    }
+
+    HalaqaModel? best;
+    int bestScore = -1;
+
+    for (final halaqa in available) {
+      int score = 0;
+
+      final darId = halaqa.darId;
+
+      if (darId != null &&
+          darId.isNotEmpty &&
+          !usedDarIds.contains(darId)) {
+        score += 2;
+      }
+
+      if (!usedAttendance.contains(halaqa.attendanceType)) {
+        score += 1;
+      }
+
+      if (best == null || score > bestScore) {
+        best = halaqa;
+        bestScore = score;
+      }
+    }
+
+    return best;
+  }
+
+  HalaqaModel? choosePreferredHalaqa(
+    List<HalaqaModel> candidates,
+    Set<String> usedIds,
+    Set<String> usedDarIds,
+    AttendanceType preferredAttendance,
+  ) {
+    final available = candidates
+        .where(
+          (halaqa) =>
+              !usedIds.contains(halaqa.id) &&
+              halaqa.attendanceType == preferredAttendance,
+        )
+        .toList();
+
+    if (available.isEmpty) {
+      return null;
+    }
+
+    for (final halaqa in available) {
+      final darId = halaqa.darId;
+
+      if (darId == null ||
+          darId.isEmpty ||
+          !usedDarIds.contains(darId)) {
+        return halaqa;
+      }
+    }
+
+    return available.first;
+  }
+
+  HalaqaModel? chooseComingSoonHalaqa(
+    List<HalaqaModel> candidates,
+    Set<String> usedIds,
+    Set<String> usedDarIds,
+    Set<AttendanceType> usedAttendance,
+  ) {
+    final available = candidates
+        .where((halaqa) => !usedIds.contains(halaqa.id))
+        .toList();
+
+    if (available.isEmpty) {
+      return null;
+    }
+
+    for (final halaqa in available) {
+      final darId = halaqa.darId;
+
+      if (!usedAttendance.contains(halaqa.attendanceType) &&
+          (darId == null ||
+              darId.isEmpty ||
+              !usedDarIds.contains(darId))) {
+        return halaqa;
+      }
+    }
+
+    for (final halaqa in available) {
+      if (!usedAttendance.contains(halaqa.attendanceType)) {
+        return halaqa;
+      }
+    }
+
+    for (final halaqa in available) {
+      final darId = halaqa.darId;
+
+      if (darId == null ||
+          darId.isEmpty ||
+          !usedDarIds.contains(darId)) {
+        return halaqa;
+      }
+    }
+
+    return available.first;
+  }
+
   String getLocation(HalaqaModel halaqa) {
     if (halaqa.attendanceType == AttendanceType.online) {
       return 'أونلاين';
     }
 
-    if (halaqa.darId != null) {
+    if (halaqa.darId != null && halaqa.darId!.isNotEmpty) {
       final dar = getDarById(halaqa.darId!);
 
       if (dar != null) {
@@ -123,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    return 'حضوري';
+    return '';
   }
 
   String getImage(HalaqaModel halaqa) {
@@ -135,265 +268,303 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String getDescription(HalaqaModel halaqa) {
-    switch (halaqa.focus) {
-      case HalaqaFocus.tajweed:
-        return 'برنامج يساعدك على تحسين التلاوة وإتقان أحكام التجويد';
-      case HalaqaFocus.memorization:
-        return 'حلقة للحفظ مع المتابعة والمراجعة المستمرة';
-      case HalaqaFocus.recitation:
-        return 'لقاءات لتحسين التلاوة والتدرب على القراءة الصحيحة';
-      case HalaqaFocus.review:
-        return 'حلقة مخصصة لمراجعة المحفوظ وتثبيته';
+    if (halaqa.darId != null && halaqa.darId!.isNotEmpty) {
+      final dar = getDarById(halaqa.darId!);
+
+      if (dar?.description != null &&
+          dar!.description!.trim().isNotEmpty) {
+        return dar.description!;
+      }
     }
+
+    return '${halaqa.focus.label} - ${halaqa.time.label} - ${halaqa.category.label}';
   }
 
-  HalaqaModel? chooseHalaqa(
-    HalaqaFocus focus,
-    RegistrationStatus status,
-    Set<String> usedIds,
-    bool preferOnline,
-  ) {
-    final candidates = getHalaqasByFocus(focus, status)
-        .where((halaqa) => !usedIds.contains(halaqa.id))
-        .toList();
+  _HomeItem? createHalaqaItem(
+    HalaqaModel halaqa, {
+    bool showDarName = false,
+  }) {
+    DarModel? dar;
 
-    if (candidates.isEmpty) {
+    if (halaqa.darId != null && halaqa.darId!.isNotEmpty) {
+      dar = getDarById(halaqa.darId!);
+    }
+
+    if (showDarName && dar == null) {
       return null;
     }
 
-    if (preferOnline) {
-      for (final halaqa in candidates) {
-        if (halaqa.attendanceType == AttendanceType.online) {
-          return halaqa;
+    return _HomeItem(
+      title: showDarName ? dar!.name : halaqa.name,
+      subtitle: showDarName ? halaqa.focus.label : halaqa.name,
+      description: getDescription(halaqa),
+      location: getLocation(halaqa),
+      attendance: halaqa.attendanceType,
+      image: showDarName &&
+              dar!.imageUrl != null &&
+              dar.imageUrl!.trim().isNotEmpty
+          ? dar.imageUrl!
+          : getImage(halaqa),
+      imageIsNetwork: showDarName &&
+          dar!.imageUrl != null &&
+          dar.imageUrl!.trim().isNotEmpty,
+      halaqa: halaqa,
+      dar: dar,
+      showDarName: showDarName,
+    );
+  }
+
+  SavedItem createSavedItem(_HomeItem item) {
+    return SavedItem(
+      id: item.halaqa.id,
+      title: item.title,
+      subtitle: item.subtitle,
+      description: item.description,
+      location: item.location,
+      attendance: item.attendance,
+      image: item.image,
+      imageIsNetwork: item.imageIsNetwork,
+      halaqa: item.halaqa,
+      dar: item.dar,
+      showDarName: item.showDarName,
+    );
+  }
+
+  List<_HomeItem> getOpenItems() {
+    final items = <_HomeItem>[];
+    final usedIds = <String>{};
+    final usedDarIds = <String>{};
+
+    final darHalaqa = choosePreferredHalaqa(
+      getDarHalaqas(RegistrationStatus.open),
+      usedIds,
+      usedDarIds,
+      AttendanceType.inPerson,
+    );
+
+    if (darHalaqa != null) {
+      final item = createHalaqaItem(
+        darHalaqa,
+        showDarName: true,
+      );
+
+      if (item != null) {
+        items.add(item);
+        usedIds.add(darHalaqa.id);
+
+        if (darHalaqa.darId != null &&
+            darHalaqa.darId!.isNotEmpty) {
+          usedDarIds.add(darHalaqa.darId!);
         }
       }
     }
 
-    for (final halaqa in candidates) {
-      if (halaqa.attendanceType == AttendanceType.inPerson) {
-        return halaqa;
+    final recitationHalaqa = choosePreferredHalaqa(
+      getHalaqasByFocus(
+        HalaqaFocus.recitation,
+        RegistrationStatus.open,
+      ),
+      usedIds,
+      usedDarIds,
+      AttendanceType.online,
+    );
+
+    if (recitationHalaqa != null) {
+      final item = createHalaqaItem(recitationHalaqa);
+
+      if (item != null) {
+        items.add(item);
+        usedIds.add(recitationHalaqa.id);
+
+        if (recitationHalaqa.darId != null &&
+            recitationHalaqa.darId!.isNotEmpty) {
+          usedDarIds.add(recitationHalaqa.darId!);
+        }
       }
     }
 
-    return candidates.first;
-  }
+    final tajweedHalaqa = choosePreferredHalaqa(
+      getHalaqasByFocus(
+        HalaqaFocus.tajweed,
+        RegistrationStatus.open,
+      ),
+      usedIds,
+      usedDarIds,
+      AttendanceType.inPerson,
+    );
 
-  List<_HomeItem> getRegistrationItems() {
-    final items = <_HomeItem>[];
-    final usedIds = <String>{};
+    if (tajweedHalaqa != null) {
+      final item = createHalaqaItem(tajweedHalaqa);
 
-    final darHalaqa = getDarHalaqa(RegistrationStatus.open);
+      if (item != null) {
+        items.add(item);
+        usedIds.add(tajweedHalaqa.id);
 
-    if (darHalaqa != null && darHalaqa.darId != null) {
-      final dar = getDarById(darHalaqa.darId!);
-
-      if (dar != null) {
-        usedIds.add(darHalaqa.id);
-
-        items.add(
-          _HomeItem(
-            title: dar.name,
-            subtitle: darHalaqa.name,
-            description: 'دار تحفيظ تقدم حلقات وبرامج قرآنية متنوعة',
-            location: darHalaqa.attendanceType == AttendanceType.online
-                ? 'أونلاين'
-                : dar.address,
-            attendance: darHalaqa.attendanceType,
-            image: dar.imageUrl != null &&
-                    dar.imageUrl!.trim().isNotEmpty
-                ? dar.imageUrl!
-                : getImage(darHalaqa),
-            imageIsNetwork: dar.imageUrl != null &&
-                dar.imageUrl!.trim().isNotEmpty,
-          ),
-        );
+        if (tajweedHalaqa.darId != null &&
+            tajweedHalaqa.darId!.isNotEmpty) {
+          usedDarIds.add(tajweedHalaqa.darId!);
+        }
       }
     }
 
-    final tajweed = chooseHalaqa(
-      HalaqaFocus.tajweed,
-      RegistrationStatus.open,
+    final memorizationHalaqa = choosePreferredHalaqa(
+      getHalaqasByFocus(
+        HalaqaFocus.memorization,
+        RegistrationStatus.open,
+      ),
       usedIds,
-      true,
+      usedDarIds,
+      AttendanceType.online,
     );
 
-    if (tajweed != null) {
-      usedIds.add(tajweed.id);
+    if (memorizationHalaqa != null) {
+      final item = createHalaqaItem(memorizationHalaqa);
 
-      items.add(
-        _HomeItem(
-          title: tajweed.name,
-          subtitle: 'حلقة تجويد',
-          description: getDescription(tajweed),
-          location: getLocation(tajweed),
-          attendance: tajweed.attendanceType,
-          image: getImage(tajweed),
-        ),
-      );
-    }
+      if (item != null) {
+        items.add(item);
+        usedIds.add(memorizationHalaqa.id);
 
-    final memorization = chooseHalaqa(
-      HalaqaFocus.memorization,
-      RegistrationStatus.open,
-      usedIds,
-      false,
-    );
-
-    if (memorization != null) {
-      usedIds.add(memorization.id);
-
-      items.add(
-        _HomeItem(
-          title: memorization.name,
-          subtitle: 'حلقة حفظ',
-          description: getDescription(memorization),
-          location: getLocation(memorization),
-          attendance: memorization.attendanceType,
-          image: getImage(memorization),
-        ),
-      );
-    }
-
-    final recitation = chooseHalaqa(
-      HalaqaFocus.recitation,
-      RegistrationStatus.open,
-      usedIds,
-      true,
-    );
-
-    if (recitation != null) {
-      usedIds.add(recitation.id);
-
-      items.add(
-        _HomeItem(
-          title: recitation.name,
-          subtitle: 'حلقة ترتيل',
-          description: getDescription(recitation),
-          location: getLocation(recitation),
-          attendance: recitation.attendanceType,
-          image: getImage(recitation),
-        ),
-      );
-    }
-
-    return items.take(4).toList();
-  }
-
-  List<_HomeItem> getComingSoonItems() {
-    final items = <_HomeItem>[];
-    final usedIds = <String>{};
-
-    final darHalaqa = getDarHalaqa(RegistrationStatus.comingSoon);
-
-    if (darHalaqa != null && darHalaqa.darId != null) {
-      final dar = getDarById(darHalaqa.darId!);
-
-      if (dar != null) {
-        usedIds.add(darHalaqa.id);
-
-        items.add(
-          _HomeItem(
-            title: dar.name,
-            subtitle: darHalaqa.name,
-            description: 'دار تحفيظ تقدم حلقات وبرامج قرآنية متنوعة',
-            location: darHalaqa.attendanceType == AttendanceType.online
-                ? 'أونلاين'
-                : dar.address,
-            attendance: darHalaqa.attendanceType,
-            image: dar.imageUrl != null &&
-                    dar.imageUrl!.trim().isNotEmpty
-                ? dar.imageUrl!
-                : getImage(darHalaqa),
-            imageIsNetwork: dar.imageUrl != null &&
-                dar.imageUrl!.trim().isNotEmpty,
-          ),
-        );
+        if (memorizationHalaqa.darId != null &&
+            memorizationHalaqa.darId!.isNotEmpty) {
+          usedDarIds.add(memorizationHalaqa.darId!);
+        }
       }
-    }
-
-    final tajweed = chooseHalaqa(
-      HalaqaFocus.tajweed,
-      RegistrationStatus.comingSoon,
-      usedIds,
-      true,
-    );
-
-    if (tajweed != null) {
-      usedIds.add(tajweed.id);
-
-      items.add(
-        _HomeItem(
-          title: tajweed.name,
-          subtitle: 'حلقة تجويد',
-          description: getDescription(tajweed),
-          location: getLocation(tajweed),
-          attendance: tajweed.attendanceType,
-          image: getImage(tajweed),
-        ),
-      );
-    }
-
-    final memorization = chooseHalaqa(
-      HalaqaFocus.memorization,
-      RegistrationStatus.comingSoon,
-      usedIds,
-      false,
-    );
-
-    if (memorization != null) {
-      usedIds.add(memorization.id);
-
-      items.add(
-        _HomeItem(
-          title: memorization.name,
-          subtitle: 'حلقة حفظ',
-          description: getDescription(memorization),
-          location: getLocation(memorization),
-          attendance: memorization.attendanceType,
-          image: getImage(memorization),
-        ),
-      );
-    }
-
-    final recitation = chooseHalaqa(
-      HalaqaFocus.recitation,
-      RegistrationStatus.comingSoon,
-      usedIds,
-      true,
-    );
-
-    if (recitation != null) {
-      usedIds.add(recitation.id);
-
-      items.add(
-        _HomeItem(
-          title: recitation.name,
-          subtitle: 'حلقة ترتيل',
-          description: getDescription(recitation),
-          location: getLocation(recitation),
-          attendance: recitation.attendanceType,
-          image: getImage(recitation),
-        ),
-      );
     }
 
     return items;
   }
 
+  List<_HomeItem> getComingSoonItems() {
+    final items = <_HomeItem>[];
+    final usedIds = <String>{};
+    final usedDarIds = <String>{};
+    final usedAttendance = <AttendanceType>{};
+
+    final darCandidates = getDarHalaqas(
+      RegistrationStatus.comingSoon,
+    );
+
+    final darHalaqa = chooseComingSoonHalaqa(
+      darCandidates,
+      usedIds,
+      usedDarIds,
+      usedAttendance,
+    );
+
+    if (darHalaqa != null) {
+      final item = createHalaqaItem(
+        darHalaqa,
+        showDarName: true,
+      );
+
+      if (item != null) {
+        items.add(item);
+        usedIds.add(darHalaqa.id);
+        usedAttendance.add(darHalaqa.attendanceType);
+
+        if (darHalaqa.darId != null &&
+            darHalaqa.darId!.isNotEmpty) {
+          usedDarIds.add(darHalaqa.darId!);
+        }
+      }
+    }
+
+    final focusList = [
+      HalaqaFocus.tajweed,
+      HalaqaFocus.memorization,
+      HalaqaFocus.recitation,
+    ];
+
+    for (final focus in focusList) {
+      final halaqa = chooseComingSoonHalaqa(
+        getHalaqasByFocus(
+          focus,
+          RegistrationStatus.comingSoon,
+        ),
+        usedIds,
+        usedDarIds,
+        usedAttendance,
+      );
+
+      if (halaqa == null) {
+        continue;
+      }
+
+      final item = createHalaqaItem(halaqa);
+
+      if (item == null) {
+        continue;
+      }
+
+      items.add(item);
+      usedIds.add(halaqa.id);
+      usedAttendance.add(halaqa.attendanceType);
+
+      if (halaqa.darId != null &&
+          halaqa.darId!.isNotEmpty) {
+        usedDarIds.add(halaqa.darId!);
+      }
+
+      if (items.length == 4) {
+        break;
+      }
+    }
+
+    return items;
+  }
+
+  void openHomeItem(BuildContext context, _HomeItem item) {
+    if (item.showDarName && item.dar != null) {
+      final darHalaqas = halaqas
+          .where(
+            (halaqa) =>
+                halaqa.darId != null &&
+                halaqa.darId == item.dar!.id,
+          )
+          .toList();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DarDetailsScreen(
+            dar: item.dar!,
+            halaqas: darHalaqas,
+          ),
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HalaqaDetailsScreen(
+          halaqa: item.halaqa,
+          dar: item.dar,
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
+    savedService.removeListener(onSavedItemsChanged);
     registrationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final registrationOpen = getRegistrationItems();
+    final registrationOpen = getOpenItems();
     final comingSoon = getComingSoonItems();
 
     return Scaffold(
+      key: scaffoldKey,
       backgroundColor: const Color(0xFFF7F5EF),
-      endDrawer: const _SideDrawer(),
+      endDrawer: _SideDrawer(
+        homeContext: context,
+        scaffoldKey: scaffoldKey,
+      ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(72),
         child: AppBar(
@@ -436,7 +607,14 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 8),
           ],
           leading: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NotificationsScreen(),
+                ),
+              );
+            },
             icon: const Icon(
               Icons.notifications_none_rounded,
               color: Color(0xFFFFF8EA),
@@ -489,31 +667,44 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 3),
-                        child: Container(
-                          height: 74,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF24483A),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                category['icon'],
-                                color: const Color(0xFFFFF8EA),
-                                size: 22,
-                              ),
-                              const SizedBox(height: 7),
-                              Text(
-                                category['title'],
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Color(0xFFFFF8EA),
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w600,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DarsScreen(
+                                  category: category['title'] as String,
                                 ),
                               ),
-                            ],
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            height: 74,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF24483A),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  category['icon'],
+                                  color: const Color(0xFFFFF8EA),
+                                  size: 22,
+                                ),
+                                const SizedBox(height: 7),
+                                Text(
+                                  category['title'],
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Color(0xFFFFF8EA),
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -567,6 +758,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: 4,
                         itemBuilder: (context, index) {
                           final item = registrationOpen[index];
+                          final savedItem = createSavedItem(item);
 
                           return Padding(
                             padding: const EdgeInsets.only(left: 10),
@@ -578,6 +770,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               attendance: item.attendance,
                               image: item.image,
                               imageIsNetwork: item.imageIsNetwork,
+                              savedItem: savedItem,
+                              isFavorite:
+                                  savedService.isFavorite(savedItem.id),
+                              isNotificationEnabled: savedService
+                                  .isNotificationEnabled(savedItem.id),
+                              onFavorite: () {
+                                savedService.toggleFavorite(savedItem);
+                              },
+                              onNotification: () {
+                                savedService.toggleNotification(savedItem);
+                              },
+                              onTap: () => openHomeItem(context, item),
                             ),
                           );
                         },
@@ -607,7 +811,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   )
-                else if (comingSoon.isEmpty)
+                else if (comingSoon.length < 4)
                   const SizedBox(
                     height: 130,
                     child: Center(
@@ -622,20 +826,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 else
                   ...comingSoon.map(
-                    (item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 13),
-                      child: _ComingSoonCard(
-                        title: item.title,
-                        subtitle: item.subtitle,
-                        description: item.description,
-                        location: item.location,
-                        attendance: item.attendance,
-                        date: 'يبدأ قريبًا',
-                        image: item.image,
-                        alignment: const Alignment(0, 0),
-                        imageIsNetwork: item.imageIsNetwork,
-                      ),
-                    ),
+                    (item) {
+                      final savedItem = createSavedItem(item);
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 13),
+                        child: _ComingSoonCard(
+                          title: item.title,
+                          subtitle: item.subtitle,
+                          description: item.description,
+                          location: item.location,
+                          attendance: item.attendance,
+                          date: 'قريبًا',
+                          image: item.image,
+                          alignment: const Alignment(0, 0),
+                          imageIsNetwork: item.imageIsNetwork,
+                          isFavorite:
+                              savedService.isFavorite(savedItem.id),
+                          isNotificationEnabled:
+                              savedService.isNotificationEnabled(
+                            savedItem.id,
+                          ),
+                          onFavorite: () {
+                            savedService.toggleFavorite(savedItem);
+                          },
+                          onNotification: () {
+                            savedService.toggleNotification(savedItem);
+                          },
+                          onTap: () => openHomeItem(context, item),
+                        ),
+                      );
+                    },
                   ),
                 const SizedBox(height: 10),
               ],
@@ -643,7 +864,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const _BottomNavBar(),
+      bottomNavigationBar: _BottomNavBar(dars: dars),
     );
   }
 }
@@ -656,6 +877,9 @@ class _HomeItem {
   final AttendanceType attendance;
   final String image;
   final bool imageIsNetwork;
+  final HalaqaModel halaqa;
+  final DarModel? dar;
+  final bool showDarName;
 
   const _HomeItem({
     required this.title,
@@ -664,12 +888,19 @@ class _HomeItem {
     required this.location,
     required this.attendance,
     required this.image,
+    required this.halaqa,
+    required this.dar,
+    required this.showDarName,
     this.imageIsNetwork = false,
   });
 }
 
 class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar();
+  final List<DarModel> dars;
+
+  const _BottomNavBar({
+    required this.dars,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -724,6 +955,35 @@ class _BottomNavBar extends StatelessWidget {
                       ),
                     );
                   }
+
+                  if (item['title'] == 'محاضرات') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const LecturesScreen(),
+                      ),
+                    );
+                  }
+
+                  if (item['title'] == 'تبرع') {
+                    if (dars.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('لم يتم تحميل بيانات الدور بعد'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DonationScreen(
+                          dar: dars.first,
+                        ),
+                      ),
+                    );
+                  }
                 },
                 child: Center(
                   child: Column(
@@ -770,6 +1030,12 @@ class _RegistrationCard extends StatelessWidget {
   final AttendanceType attendance;
   final String image;
   final bool imageIsNetwork;
+  final SavedItem savedItem;
+  final bool isFavorite;
+  final bool isNotificationEnabled;
+  final VoidCallback onFavorite;
+  final VoidCallback onNotification;
+  final VoidCallback onTap;
 
   const _RegistrationCard({
     required this.title,
@@ -778,149 +1044,177 @@ class _RegistrationCard extends StatelessWidget {
     required this.location,
     required this.attendance,
     required this.image,
+    required this.savedItem,
+    required this.isFavorite,
+    required this.isNotificationEnabled,
+    required this.onFavorite,
+    required this.onNotification,
+    required this.onTap,
     this.imageIsNetwork = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFFE7E3D9),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          Expanded(
-            flex: 12,
-            child: imageIsNetwork
-                ? Image.network(
-                    image,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: const Color(0xFFE8E4D9),
-                        child: const Center(
-                          child: Icon(
-                            Icons.image_outlined,
-                            color: Color(0xFF24483A),
-                            size: 32,
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                : Image.asset(
-                    image,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: const Color(0xFFE8E4D9),
-                        child: const Center(
-                          child: Icon(
-                            Icons.image_outlined,
-                            color: Color(0xFF24483A),
-                            size: 32,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: const Color(0xFFE7E3D9),
           ),
-          Expanded(
-            flex: 8,
-            child: Container(
-              width: double.infinity,
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 6,
-              ),
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF24483A),
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            description,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 9.5,
-                              color: Color(0xFF666666),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.location_on_outlined,
-                              size: 12,
-                              color: Color(0xFF9A7955),
-                            ),
-                            const SizedBox(width: 2),
-                            SizedBox(
-                              width: 70,
-                              child: Text(
-                                location,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 9,
-                                  color: Color(0xFF777777),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            Expanded(
+              flex: 12,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: imageIsNetwork
+                        ? Image.network(
+                            image,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: const Color(0xFFE8E4D9),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.image_outlined,
+                                    color: Color(0xFF24483A),
+                                    size: 32,
+                                  ),
                                 ),
+                              );
+                            },
+                          )
+                        : Image.asset(
+                            image,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: const Color(0xFFE8E4D9),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.image_outlined,
+                                    color: Color(0xFF24483A),
+                                    size: 32,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                  Positioned(
+                    top: 7,
+                    left: 8,
+                    right: 8,
+                    child: SaveActions(
+                      isFavorite: isFavorite,
+                      isRegistered: isNotificationEnabled,
+                      showBell: true,
+                      onFavorite: onFavorite,
+                      onRegister: onNotification,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 8,
+              child: Container(
+                width: double.infinity,
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 6,
+                ),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF24483A),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              description,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 9.5,
+                                color: Color(0xFF666666),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          attendance == AttendanceType.online
-                              ? 'أونلاين'
-                              : 'حضوري',
-                          style: const TextStyle(
-                            fontSize: 9,
-                            color: Color(0xFF777777),
+                      ),
+                      const SizedBox(width: 8),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.location_on_outlined,
+                                size: 12,
+                                color: Color(0xFF9A7955),
+                              ),
+                              const SizedBox(width: 2),
+                              SizedBox(
+                                width: 70,
+                                child: Text(
+                                  location,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 9,
+                                    color: Color(0xFF777777),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(height: 2),
+                          Text(
+                            attendance == AttendanceType.online
+                                ? 'أونلاين'
+                                : 'حضوري',
+                            style: const TextStyle(
+                              fontSize: 9,
+                              color: Color(0xFF777777),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -936,6 +1230,11 @@ class _ComingSoonCard extends StatelessWidget {
   final String image;
   final Alignment alignment;
   final bool imageIsNetwork;
+  final bool isFavorite;
+  final bool isNotificationEnabled;
+  final VoidCallback onFavorite;
+  final VoidCallback onNotification;
+  final VoidCallback onTap;
 
   const _ComingSoonCard({
     required this.title,
@@ -946,6 +1245,11 @@ class _ComingSoonCard extends StatelessWidget {
     required this.date,
     required this.image,
     required this.alignment,
+    required this.isFavorite,
+    required this.isNotificationEnabled,
+    required this.onFavorite,
+    required this.onNotification,
+    required this.onTap,
     this.imageIsNetwork = false,
   });
 
@@ -953,116 +1257,140 @@ class _ComingSoonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Container(
-        height: 130,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: const Color(0xFFE7E3D9),
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 105,
-              height: double.infinity,
-              child: imageIsNetwork
-                  ? Image.network(
-                      image,
-                      fit: BoxFit.cover,
-                      alignment: alignment,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: const Color(0xFFE8E4D9),
-                          child: const Icon(
-                            Icons.image_outlined,
-                            color: Color(0xFF24483A),
-                          ),
-                        );
-                      },
-                    )
-                  : Image.asset(
-                      image,
-                      fit: BoxFit.cover,
-                      alignment: alignment,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: const Color(0xFFE8E4D9),
-                          child: const Icon(
-                            Icons.image_outlined,
-                            color: Color(0xFF24483A),
-                          ),
-                        );
-                      },
-                    ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          height: 130,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: const Color(0xFFE7E3D9),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 105,
+                height: double.infinity,
+                child: Stack(
                   children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF24483A),
-                      ),
+                    Positioned.fill(
+                      child: imageIsNetwork
+                          ? Image.network(
+                              image,
+                              fit: BoxFit.cover,
+                              alignment: alignment,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: const Color(0xFFE8E4D9),
+                                  child: const Icon(
+                                    Icons.image_outlined,
+                                    color: Color(0xFF24483A),
+                                  ),
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              image,
+                              fit: BoxFit.cover,
+                              alignment: alignment,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: const Color(0xFFE8E4D9),
+                                  child: const Icon(
+                                    Icons.image_outlined,
+                                    color: Color(0xFF24483A),
+                                  ),
+                                );
+                              },
+                            ),
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF666666),
-                        height: 1.4,
+                    Positioned(
+                      top: 7,
+                      left: 7,
+                      right: 7,
+                      child: SaveActions(
+                        isFavorite: isFavorite,
+                        isRegistered: isNotificationEnabled,
+                        showBell: true,
+                        onFavorite: onFavorite,
+                        onRegister: onNotification,
                       ),
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Text(
-                          location,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color(0xFF777777),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          attendance == AttendanceType.online
-                              ? 'أونلاين'
-                              : 'حضوري',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color(0xFF777777),
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          date,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF9A7955),
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF24483A),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF666666),
+                          height: 1.4,
+                        ),
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              location,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Color(0xFF777777),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            attendance == AttendanceType.online
+                                ? 'أونلاين'
+                                : 'حضوري',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color(0xFF777777),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            date,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF9A7955),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1083,7 +1411,39 @@ class _NoStretchBehavior extends ScrollBehavior {
 }
 
 class _SideDrawer extends StatelessWidget {
-  const _SideDrawer();
+  final BuildContext homeContext;
+  final GlobalKey<ScaffoldState> scaffoldKey;
+
+  const _SideDrawer({
+    required this.homeContext,
+    required this.scaffoldKey,
+  });
+
+  void openMenuPage(
+    BuildContext drawerContext,
+    Widget page,
+  ) {
+    Navigator.pop(drawerContext);
+
+    Future.delayed(const Duration(milliseconds: 120), () {
+      if (!homeContext.mounted) return;
+
+      Navigator.push(
+        homeContext,
+        MaterialPageRoute(
+          builder: (_) => page,
+        ),
+      );
+    });
+  }
+
+  void returnToMenu() {
+    Navigator.pop(homeContext);
+
+    Future.delayed(const Duration(milliseconds: 120), () {
+      scaffoldKey.currentState?.openEndDrawer();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1126,22 +1486,50 @@ class _SideDrawer extends StatelessWidget {
             _DrawerItem(
               icon: Icons.settings_outlined,
               title: 'الإعدادات',
-              onTap: () {},
+              onTap: () {
+                openMenuPage(
+                  context,
+                  SettingsScreen(
+                    onBackToMenu: returnToMenu,
+                  ),
+                );
+              },
             ),
             _DrawerItem(
               icon: Icons.help_outline_rounded,
               title: 'الأسئلة الشائعة',
-              onTap: () {},
+              onTap: () {
+                openMenuPage(
+                  context,
+                  FeqScreen(
+                    onBackToMenu: returnToMenu,
+                  ),
+                );
+              },
             ),
             _DrawerItem(
               icon: Icons.info_outline_rounded,
               title: 'من نحن',
-              onTap: () {},
+              onTap: () {
+                openMenuPage(
+                  context,
+                  about_us.AboutUsScreen(
+                    onBackToMenu: returnToMenu,
+                  ),
+                );
+              },
             ),
             _DrawerItem(
               icon: Icons.mail_outline_rounded,
               title: 'تواصل معنا',
-              onTap: () {},
+              onTap: () {
+                openMenuPage(
+                  context,
+                  ContactUsScreen(
+                    onBackToMenu: returnToMenu,
+                  ),
+                );
+              },
             ),
           ],
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/halaqa_model.dart';
+import '../../services/local_saved_service.dart';
 
-/// صفحة تسجيل الحلقة: تطلب الاسم الكامل، تاريخ الميلاد، ورقم الجوال.
 class HalaqaRegistrationScreen extends StatefulWidget {
   final HalaqaModel halaqa;
 
@@ -45,8 +45,10 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
           icon: const Icon(Icons.arrow_forward, color: _gold),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('التسجيل بالحلقة',
-            style: TextStyle(color: _cream, fontSize: 14)),
+        title: const Text(
+          'التسجيل بالحلقة',
+          style: TextStyle(color: _cream, fontSize: 14),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -70,30 +72,37 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
                 style: TextStyle(fontSize: 12, color: _muted),
               ),
               const SizedBox(height: 24),
-
               _buildLabel('الاسم الكامل'),
               _buildTextField(
                 controller: _nameController,
                 hint: 'مثال: سارة عبدالله',
                 keyboardType: TextInputType.name,
-                validator: (value) => (value == null || value.trim().isEmpty)
-                    ? 'الاسم مطلوب'
-                    : null,
+                validator: (value) =>
+                    (value == null || value.trim().isEmpty)
+                        ? 'الاسم مطلوب'
+                        : null,
               ),
               const SizedBox(height: 16),
-
               _buildLabel('تاريخ الميلاد'),
               Row(
                 children: [
-                  Expanded(flex: 2, child: _buildDayDropdown()),
+                  Expanded(
+                    flex: 2,
+                    child: _buildDayDropdown(),
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(flex: 3, child: _buildMonthDropdown()),
+                  Expanded(
+                    flex: 3,
+                    child: _buildMonthDropdown(),
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(flex: 2, child: _buildYearDropdown()),
+                  Expanded(
+                    flex: 2,
+                    child: _buildYearDropdown(),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
-
               _buildLabel('رقم الجوال'),
               _buildTextField(
                 controller: _phoneController,
@@ -103,24 +112,28 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
                   if (value == null || value.trim().isEmpty) {
                     return 'رقم الجوال مطلوب';
                   }
+
                   if (value.trim().length < 9) {
                     return 'رقم الجوال غير صحيح';
                   }
+
                   return null;
                 },
               ),
               const SizedBox(height: 28),
-
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _darkGreen,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: _submit,
-                child: const Text('تسجيل',
-                    style: TextStyle(color: _cream, fontSize: 15)),
+                child: const Text(
+                  'تسجيل',
+                  style: TextStyle(color: _cream, fontSize: 15),
+                ),
               ),
             ],
           ),
@@ -163,13 +176,18 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
         hintText: hint,
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
         border: border,
         enabledBorder: border,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: _darkGreen, width: 1.4),
+          borderSide: const BorderSide(
+            color: _darkGreen,
+            width: 1.4,
+          ),
         ),
       ),
     );
@@ -180,18 +198,27 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
       borderRadius: BorderRadius.circular(12),
       borderSide: const BorderSide(color: _border),
     );
+
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: 12, color: _muted),
+      hintStyle: const TextStyle(
+        fontSize: 12,
+        color: _muted,
+      ),
       filled: true,
       fillColor: Colors.white,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 6,
+        vertical: 12,
+      ),
       border: border,
       enabledBorder: border,
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _darkGreen, width: 1.4),
+        borderSide: const BorderSide(
+          color: _darkGreen,
+          width: 1.4,
+        ),
       ),
     );
   }
@@ -202,10 +229,15 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
       isExpanded: true,
       decoration: _dropdownDecoration('اليوم'),
       items: List.generate(31, (i) => i + 1)
-          .map((day) => DropdownMenuItem(
-                value: day,
-                child: Text('$day', style: const TextStyle(fontSize: 13)),
-              ))
+          .map(
+            (day) => DropdownMenuItem(
+              value: day,
+              child: Text(
+                '$day',
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          )
           .toList(),
       onChanged: (value) => setState(() => _selectedDay = value),
       validator: (value) => value == null ? 'مطلوب' : null,
@@ -214,19 +246,34 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
 
   Widget _buildMonthDropdown() {
     const months = [
-      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
     ];
+
     return DropdownButtonFormField<int>(
       value: _selectedMonth,
       isExpanded: true,
       decoration: _dropdownDecoration('الشهر'),
       items: List.generate(12, (i) => i + 1)
-          .map((month) => DropdownMenuItem(
-                value: month,
-                child: Text(months[month - 1],
-                    style: const TextStyle(fontSize: 13)),
-              ))
+          .map(
+            (month) => DropdownMenuItem(
+              value: month,
+              child: Text(
+                months[month - 1],
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          )
           .toList(),
       onChanged: (value) => setState(() => _selectedMonth = value),
       validator: (value) => value == null ? 'مطلوب' : null,
@@ -236,15 +283,21 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
   Widget _buildYearDropdown() {
     final currentYear = DateTime.now().year;
     final years = List.generate(80, (i) => currentYear - i);
+
     return DropdownButtonFormField<int>(
       value: _selectedYear,
       isExpanded: true,
       decoration: _dropdownDecoration('السنة'),
       items: years
-          .map((year) => DropdownMenuItem(
-                value: year,
-                child: Text('$year', style: const TextStyle(fontSize: 13)),
-              ))
+          .map(
+            (year) => DropdownMenuItem(
+              value: year,
+              child: Text(
+                '$year',
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          )
           .toList(),
       onChanged: (value) => setState(() => _selectedYear = value),
       validator: (value) => value == null ? 'مطلوب' : null,
@@ -252,13 +305,31 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
   }
 
   void _submit() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: هنا لاحقا نرسل البيانات لجدول تسجيلات بـ Supabase
-      _showSuccessDialog();
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
+
+    final savedItem = SavedItem(
+      id: widget.halaqa.id,
+      title: widget.halaqa.name,
+      subtitle: widget.halaqa.focus.label,
+      description: 'تم التسجيل في هذه الحلقة',
+      location: widget.halaqa.attendanceType == AttendanceType.online
+          ? 'أونلاين'
+          : 'حضوري',
+      attendance: widget.halaqa.attendanceType,
+      image: 'assets/images/onboarding_1.png',
+      imageIsNetwork: false,
+      halaqa: widget.halaqa,
+      dar: null,
+      showDarName: false,
+    );
+
+    LocalSavedService.instance.addRegistration(savedItem);
+
+    _showSuccessDialog();
   }
 
-  /// يعرض مربع نجاح فوق نفس الشاشة (Dialog)، مو شاشة جديدة.
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -266,10 +337,14 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
       builder: (dialogContext) {
         return Dialog(
           backgroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+            padding: const EdgeInsets.symmetric(
+              vertical: 28,
+              horizontal: 24,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -280,8 +355,11 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
                     color: Color(0xFFEAF3DE),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check,
-                      color: Color(0xFF2D4A16), size: 36),
+                  child: const Icon(
+                    Icons.check,
+                    color: Color(0xFF2D4A16),
+                    size: 36,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -296,7 +374,10 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
                 const Text(
                   'راح يتواصلون معك قريبًا لتأكيد الموعد',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: _muted),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _muted,
+                  ),
                 ),
                 const SizedBox(height: 22),
                 SizedBox(
@@ -306,14 +387,20 @@ class _HalaqaRegistrationScreenState extends State<HalaqaRegistrationScreen> {
                       backgroundColor: _darkGreen,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     onPressed: () {
-                      Navigator.pop(dialogContext); // يقفل مربع النجاح
-                      Navigator.pop(context); // يرجع لصفحة تفاصيل الحلقة
+                      Navigator.pop(dialogContext);
+                      Navigator.pop(context);
                     },
-                    child: const Text('العودة',
-                        style: TextStyle(color: _cream, fontSize: 14)),
+                    child: const Text(
+                      'العودة',
+                      style: TextStyle(
+                        color: _cream,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mishkah/screens/halaqa/halaqa_registration_screen.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../models/dar_model.dart';
 import '../../models/halaqa_model.dart';
 
-
 class HalaqaDetailsScreen extends StatelessWidget {
   final HalaqaModel halaqa;
-
-
   final DarModel? dar;
 
   const HalaqaDetailsScreen({
@@ -24,41 +20,51 @@ class HalaqaDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _cream,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: _darkGreen,
-            expandedHeight: 90,
-            pinned: true,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_forward, color: _gold),
-              onPressed: () => Navigator.pop(context),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: _cream,
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              backgroundColor: _darkGreen,
+              expandedHeight: 90,
+              pinned: true,
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_forward,
+                  color: _gold,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: const Text(
+                'تفاصيل الحلقة',
+                style: TextStyle(
+                  color: _cream,
+                  fontSize: 14,
+                ),
+              ),
+              centerTitle: true,
             ),
-            title: const Text('تفاصيل الحلقة',
-                style: TextStyle(color: _cream, fontSize: 14)),
-            centerTitle: true,
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderCard(),
-                  const SizedBox(height: 16),
-                  _buildInfoGrid(),
-                  const SizedBox(height: 16),
-                  _buildContactCard(),
-                  const SizedBox(height: 22),
-                  _buildRegisterButton(context),
-                  
-                ],
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildHeaderCard(),
+                    const SizedBox(height: 16),
+                    _buildInfoGrid(),
+                    const SizedBox(height: 16),
+                    _buildContactCard(),
+                    const SizedBox(height: 22),
+                    _buildRegisterButton(context),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -70,9 +76,12 @@ class HalaqaDetailsScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE7DFC9)),
+        border: Border.all(
+          color: const Color(0xFFE7DFC9),
+        ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 48,
@@ -81,11 +90,16 @@ class HalaqaDetailsScreen extends StatelessWidget {
               color: const Color(0xFFEFE7D4),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.menu_book, color: _darkGreen),
+            child: const Icon(
+              Icons.menu_book,
+              color: _darkGreen,
+            ),
           ),
           const SizedBox(height: 10),
           Text(
             halaqa.name,
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.right,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -95,7 +109,12 @@ class HalaqaDetailsScreen extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             dar != null ? dar!.name : 'حلقة أونلاين',
-            style: const TextStyle(fontSize: 12, color: _muted),
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              fontSize: 12,
+              color: _muted,
+            ),
           ),
         ],
       ),
@@ -128,17 +147,40 @@ class HalaqaDetailsScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: const Border(
-                  right: BorderSide(color: _gold, width: 3),
+                  right: BorderSide(
+                    color: _gold,
+                    width: 3,
+                  ),
                 ),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(item.$1,
-                      style: const TextStyle(fontSize: 10, color: _muted)),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      item.$1,
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: _muted,
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(item.$2, style: const TextStyle(fontSize: 12.5)),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      item.$2,
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -155,14 +197,24 @@ class HalaqaDetailsScreen extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
         ),
-        child: const Row(
+        child: Row(
+          textDirection: TextDirection.rtl,
           children: [
-            Icon(Icons.videocam, size: 16, color: _darkGreen),
-            SizedBox(width: 8),
+            const Icon(
+              Icons.videocam,
+              size: 16,
+              color: _darkGreen,
+            ),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 'رابط الاجتماع سيتوفر بعد التسجيل',
-                style: TextStyle(fontSize: 12, color: _muted),
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: _muted,
+                ),
               ),
             ),
           ],
@@ -177,27 +229,51 @@ class HalaqaDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (dar != null)
             Row(
+              textDirection: TextDirection.rtl,
               children: [
-                const Icon(Icons.location_on, size: 14, color: _darkGreen),
+                const Icon(
+                  Icons.location_on,
+                  size: 14,
+                  color: _darkGreen,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(dar!.address,
-                      style: const TextStyle(fontSize: 12, color: _muted)),
+                  child: Text(
+                    dar!.address,
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: _muted,
+                    ),
+                  ),
                 ),
               ],
             ),
           if (halaqa.contactPhone != null) ...[
             const SizedBox(height: 8),
             Row(
+              textDirection: TextDirection.rtl,
               children: [
-                const Icon(Icons.phone, size: 14, color: _darkGreen),
+                const Icon(
+                  Icons.phone,
+                  size: 14,
+                  color: _darkGreen,
+                ),
                 const SizedBox(width: 8),
-                Text(halaqa.contactPhone!,
-                    style: const TextStyle(fontSize: 12, color: _muted)),
+                Text(
+                  halaqa.contactPhone!,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: _muted,
+                  ),
+                ),
               ],
             ),
           ],
@@ -213,47 +289,36 @@ class HalaqaDetailsScreen extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: _darkGreen,
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
         onPressed: () => _handleRegister(context),
-        icon: const Icon(Icons.open_in_new, color: _gold, size: 17),
-        label:
-            const Text('سجل الآن', style: TextStyle(color: _cream, fontSize: 14)),
+        icon: const Icon(
+          Icons.open_in_new,
+          color: _gold,
+          size: 17,
+        ),
+        label: const Text(
+          'سجل الآن',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: _cream,
+            fontSize: 14,
+          ),
+        ),
       ),
     );
   }
 
-  
-
-
-
-void _handleRegister(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => HalaqaRegistrationScreen(halaqa: halaqa),
-    ),
-  );
-}
- /* Future<void> _handleRegister(BuildContext context) async {
-    if (halaqa.hasRegistrationLink) {
-      final uri = Uri.parse(halaqa.registrationUrl!);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    } else if (halaqa.contactPhone != null) {
-      final uri = Uri(scheme: 'tel', path: halaqa.contactPhone);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('لا تتوفر بيانات تسجيل لهذه الحلقة حاليا'),
+  void _handleRegister(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HalaqaRegistrationScreen(
+          halaqa: halaqa,
         ),
-      );
-    }
-  }*/
-
+      ),
+    );
+  }
 }
