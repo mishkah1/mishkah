@@ -126,10 +126,14 @@ class HalaqaDetailsScreen extends StatelessWidget {
       ('النوع', halaqa.focus.label),
       ('الوقت', halaqa.time.label),
       ('الفئة', halaqa.category.label),
-      if (halaqa.attendanceType == AttendanceType.inPerson)
-        ('الطابق', halaqa.floor ?? 'غير محدد'),
-      if (halaqa.attendanceType == AttendanceType.inPerson)
-        ('الحضانة', halaqa.hasDaycare ? 'متوفرة' : 'غير متوفرة'),
+if (halaqa.attendanceType == AttendanceType.inPerson)
+  (
+    'الحضانة',
+    halaqa.hasDaycare == null
+        ? 'غير محدد'
+        : (halaqa.hasDaycare! ? 'متوفرة' : 'غير متوفرة'),
+  ),
+
     ];
 
     return GridView.count(

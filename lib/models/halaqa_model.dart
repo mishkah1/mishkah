@@ -1,14 +1,20 @@
 /// طريقة الحضور: حضوري أو أونلاين.
 enum AttendanceType { inPerson, online }
 
-/// الفئة المستهدفة من الحلقة.
+/// الفئة المستهدفة من الحلقة (جنس المشاركين).
 enum HalaqaCategory { female, male, kids }
 
 /// نوع الحلقة: حفظ، مراجعة، تجويد، أو ترتيل.
 enum HalaqaFocus { memorization, review, tajweed, recitation }
 
-/// وقت انعقاد الحلقة (محدد بالصلاة اللي بعدها).
-enum HalaqaTime { fajr, asr, maghrib, isha }
+/// وقت انعقاد الحلقة: صباحي أو مسائي.
+enum HalaqaTime { morning, evening }
+
+/// الفئة العمرية المستهدفة.
+enum AgeGroup { kids, youth, adults, seniors }
+
+/// رسوم الحلقة: مجانية أو رسوم رمزية.
+enum FeeType { free, symbolic }
 
 /// حالة التسجيل بالحلقة.
 enum RegistrationStatus { open, comingSoon, closed }
@@ -25,17 +31,16 @@ class HalaqaModel {
   final HalaqaCategory category;
   final HalaqaFocus focus;
   final HalaqaTime time;
-  final bool hasDaycare;
+  final AgeGroup ageGroup;
+  final FeeType feeType;
 
-  /// رقم الطابق، يظهر فقط لو الحلقة حضورية.
-  final String? floor;
+  /// خدمات الحلقات الحضورية فقط (null للحلقات الأونلاين).
+  final bool? hasDaycare;
+  final bool? hasParking;
+  final bool? isAccessible;
 
   final RegistrationStatus registrationStatus;
-
-  /// رابط التسجيل الخاص بالحلقة (موقع الدار أو نموذج مستقل).
   final String? registrationUrl;
-
-  /// رقم تواصل بديل يظهر لو ما فيه رابط تسجيل.
   final String? contactPhone;
 
   /// رابط الاجتماع (زوم مثلا) لو الحلقة أونلاين.
@@ -49,8 +54,11 @@ class HalaqaModel {
     required this.category,
     required this.focus,
     required this.time,
-    this.hasDaycare = false,
-    this.floor,
+    required this.ageGroup,
+    required this.feeType,
+    this.hasDaycare,
+    this.hasParking,
+    this.isAccessible,
     required this.registrationStatus,
     this.registrationUrl,
     this.contactPhone,
@@ -59,6 +67,9 @@ class HalaqaModel {
 
   /// true لو الحلقة تابعة لدار (حضورية ومرتبطة بمكان فعلي).
   bool get belongsToDar => darId != null && darId!.isNotEmpty;
+
+  /// true لو الحلقة حضورية (وبالتالي لها خدمات موقع فعلية).
+  bool get isInPerson => attendanceType == AttendanceType.inPerson;
 
   /// true لو فيه رابط تسجيل فعلي، وإلا نعرض رقم التواصل.
   bool get hasRegistrationLink =>
@@ -81,8 +92,15 @@ class HalaqaModel {
       time: HalaqaTime.values.firstWhere(
         (e) => e.name == json['time'],
       ),
-      hasDaycare: json['has_daycare'] as bool? ?? false,
-      floor: json['floor'] as String?,
+      ageGroup: AgeGroup.values.firstWhere(
+        (e) => e.name == json['age_group'],
+      ),
+      feeType: FeeType.values.firstWhere(
+        (e) => e.name == json['fee_type'],
+      ),
+      hasDaycare: json['has_daycare'] as bool?,
+      hasParking: json['has_parking'] as bool?,
+      isAccessible: json['is_accessible'] as bool?,
       registrationStatus: RegistrationStatus.values.firstWhere(
         (e) => e.name == json['registration_status'],
       ),
@@ -101,8 +119,11 @@ class HalaqaModel {
       'category': category.name,
       'focus': focus.name,
       'time': time.name,
+      'age_group': ageGroup.name,
+      'fee_type': feeType.name,
       'has_daycare': hasDaycare,
-      'floor': floor,
+      'has_parking': hasParking,
+      'is_accessible': isAccessible,
       'registration_status': registrationStatus.name,
       'registration_url': registrationUrl,
       'contact_phone': contactPhone,
@@ -127,18 +148,13 @@ extension HalaqaFocusLabel on HalaqaFocus {
   }
 }
 
-
 extension HalaqaTimeLabel on HalaqaTime {
   String get label {
     switch (this) {
-      case HalaqaTime.fajr:
-        return 'فجر';
-      case HalaqaTime.asr:
-        return 'عصر';
-      case HalaqaTime.maghrib:
-        return 'مغرب';
-      case HalaqaTime.isha:
-        return 'عشاء';
+      case HalaqaTime.morning:
+        return 'صباحي';
+      case HalaqaTime.evening:
+        return 'مسائي';
     }
   }
 }
@@ -152,6 +168,32 @@ extension HalaqaCategoryLabel on HalaqaCategory {
         return 'رجالي';
       case HalaqaCategory.kids:
         return 'أطفال';
+    }
+  }
+}
+
+extension AgeGroupLabel on AgeGroup {
+  String get label {
+    switch (this) {
+      case AgeGroup.kids:
+        return 'أطفال';
+      case AgeGroup.youth:
+        return 'ناشئة';
+      case AgeGroup.adults:
+        return 'بالغون';
+      case AgeGroup.seniors:
+        return 'كبار سن';
+    }
+  }
+}
+
+extension FeeTypeLabel on FeeType {
+  String get label {
+    switch (this) {
+      case FeeType.free:
+        return 'مجاني';
+      case FeeType.symbolic:
+        return 'رسوم رمزية';
     }
   }
 }
