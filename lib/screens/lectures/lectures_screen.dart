@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/lecture_model.dart';
+import '../../repositories/dar_repository.dart';
 
 class LecturesScreen extends StatefulWidget {
   const LecturesScreen({super.key});
@@ -17,23 +17,14 @@ class _LecturesScreenState extends State<LecturesScreen> {
   static const _muted = Color(0xFF8A8470);
   static const _border = Color(0xFFE7DFC9);
 
+  final DarRepository _repository = DarRepository();
+
   late Future<List<LectureModel>> _lecturesFuture;
 
   @override
   void initState() {
     super.initState();
-    _lecturesFuture = _fetchLectures();
-  }
-
-  Future<List<LectureModel>> _fetchLectures() async {
-    final response = await Supabase.instance.client
-        .from('lectures')
-        .select()
-        .order('start_time', ascending: true);
-
-    return (response as List)
-        .map((row) => LectureModel.fromJson(row as Map<String, dynamic>))
-        .toList();
+    _lecturesFuture = _repository.fetchLectures();
   }
 
   Future<void> _openLink(String url) async {
@@ -68,10 +59,10 @@ class _LecturesScreenState extends State<LecturesScreen> {
           }
 
           if (snapshot.hasError) {
-            return Center(
+            return const Center(
               child: Text(
                 'حدث خطأ أثناء تحميل المحاضرات',
-                style: const TextStyle(color: _muted, fontSize: 13),
+                style: TextStyle(color: _muted, fontSize: 13),
               ),
             );
           }
@@ -87,13 +78,22 @@ class _LecturesScreenState extends State<LecturesScreen> {
             );
           }
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: lectures.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 14),
-            itemBuilder: (context, index) {
-              return _buildLectureCard(lectures[index]);
+          return RefreshIndicator(
+            color: _darkGreen,
+            onRefresh: () async {
+              setState(() {
+                _lecturesFuture = _repository.fetchLectures();
+              });
+              await _lecturesFuture;
             },
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: lectures.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 14),
+              itemBuilder: (context, index) {
+                return _buildLectureCard(lectures[index]);
+              },
+            ),
           );
         },
       ),

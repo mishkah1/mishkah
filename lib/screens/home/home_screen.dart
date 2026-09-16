@@ -15,6 +15,7 @@ import 'package:mishkah/screens/dar/dar_details_screen.dart';
 import 'package:mishkah/screens/dar/dars_screen.dart';
 import 'package:mishkah/screens/halaqa/halaqa_details_screen.dart';
 import 'package:mishkah/screens/notifications/notifications_screen.dart';
+import 'package:mishkah/screens/opportunities/opportunities_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,7 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final LocalSavedService savedService = LocalSavedService.instance;
 
   List<DarModel> dars = [];
-  List<HalaqaModel> halaqas = [];
+  List<HalaqaModel> openHalaqas = [];
+  List<HalaqaModel> comingSoonHalaqas = [];
   bool isLoading = true;
 
   final List<Map<String, dynamic>> categories = const [
@@ -73,14 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final results = await Future.wait([
         repository.fetchAllDars(),
-        repository.fetchAllHalaqas(),
+        repository.fetchOpenHalaqas(),
+        repository.fetchComingSoonHalaqas(),
       ]);
 
       if (!mounted) return;
 
       setState(() {
         dars = results[0] as List<DarModel>;
-        halaqas = results[1] as List<HalaqaModel>;
+        openHalaqas = results[1] as List<HalaqaModel>;
+        comingSoonHalaqas = results[2] as List<HalaqaModel>;
         isLoading = false;
       });
     } catch (e) {
@@ -92,26 +96,34 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// يرجع مصدر الحلقات المناسب لحالة التسجيل المطلوبة.
+  List<HalaqaModel> halaqasByStatus(RegistrationStatus status) {
+    if (status == RegistrationStatus.open) {
+      return openHalaqas;
+    }
+
+    if (status == RegistrationStatus.comingSoon) {
+      return comingSoonHalaqas;
+    }
+
+    return const [];
+  }
+
   List<HalaqaModel> getHalaqasByFocus(
     HalaqaFocus focus,
     RegistrationStatus status,
   ) {
-    return halaqas
-        .where(
-          (halaqa) =>
-              halaqa.focus == focus &&
-              halaqa.registrationStatus == status,
-        )
+    return halaqasByStatus(status)
+        .where((halaqa) => halaqa.focus == focus)
         .toList();
   }
 
   List<HalaqaModel> getDarHalaqas(RegistrationStatus status) {
-    return halaqas
+    return halaqasByStatus(status)
         .where(
           (halaqa) =>
               halaqa.darId != null &&
               halaqa.darId!.isNotEmpty &&
-              halaqa.registrationStatus == status &&
               halaqa.attendanceType == AttendanceType.inPerson,
         )
         .toList();
@@ -431,6 +443,43 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
+    // تعبئة أي نقص من بقية الحلقات المفتوحة بقاعدة البيانات.
+    if (items.length < 4) {
+      final usedAttendance = <AttendanceType>{};
+
+      for (final item in items) {
+        usedAttendance.add(item.attendance);
+      }
+
+      while (items.length < 4) {
+        final fallback = chooseHalaqa(
+          halaqasByStatus(RegistrationStatus.open),
+          usedIds,
+          usedDarIds,
+          usedAttendance,
+        );
+
+        if (fallback == null) {
+          break;
+        }
+
+        usedIds.add(fallback.id);
+
+        final item = createHalaqaItem(fallback);
+
+        if (item == null) {
+          continue;
+        }
+
+        items.add(item);
+        usedAttendance.add(fallback.attendanceType);
+
+        if (fallback.darId != null && fallback.darId!.isNotEmpty) {
+          usedDarIds.add(fallback.darId!);
+        }
+      }
+    }
+
     return items;
   }
 
@@ -510,18 +559,61 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
+    // تعبئة أي نقص من بقية حلقات "قريبًا" بقاعدة البيانات.
+    while (items.length < 4) {
+      final fallback = chooseComingSoonHalaqa(
+        halaqasByStatus(RegistrationStatus.comingSoon),
+        usedIds,
+        usedDarIds,
+        usedAttendance,
+      );
+
+      if (fallback == null) {
+        break;
+      }
+
+      usedIds.add(fallback.id);
+
+      final item = createHalaqaItem(fallback);
+
+      if (item == null) {
+        continue;
+      }
+
+      items.add(item);
+      usedAttendance.add(fallback.attendanceType);
+
+      if (fallback.darId != null && fallback.darId!.isNotEmpty) {
+        usedDarIds.add(fallback.darId!);
+      }
+    }
+
     return items;
   }
 
-  void openHomeItem(BuildContext context, _HomeItem item) {
+  Future<void> openHomeItem(
+    BuildContext context,
+    _HomeItem item,
+  ) async {
     if (item.showDarName && item.dar != null) {
-      final darHalaqas = halaqas
-          .where(
-            (halaqa) =>
-                halaqa.darId != null &&
-                halaqa.darId == item.dar!.id,
-          )
-          .toList();
+      List<HalaqaModel> darHalaqas;
+
+      try {
+        darHalaqas = await repository.fetchHalaqasForDar(item.dar!.id);
+      } catch (e) {
+        darHalaqas = [
+          ...openHalaqas,
+          ...comingSoonHalaqas,
+        ]
+            .where(
+              (halaqa) =>
+                  halaqa.darId != null &&
+                  halaqa.darId == item.dar!.id,
+            )
+            .toList();
+      }
+
+      if (!mounted) return;
 
       Navigator.push(
         context,
@@ -734,7 +826,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   )
-                else if (registrationOpen.length < 4)
+                else if (registrationOpen.isEmpty)
                   const SizedBox(
                     height: 185,
                     child: Center(
@@ -755,7 +847,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: PageView.builder(
                         controller: registrationController,
                         physics: const PageScrollPhysics(),
-                        itemCount: 4,
+                        itemCount: registrationOpen.length,
                         itemBuilder: (context, index) {
                           final item = registrationOpen[index];
                           final savedItem = createSavedItem(item);
@@ -811,7 +903,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   )
-                else if (comingSoon.length < 4)
+                else if (comingSoon.isEmpty)
                   const SizedBox(
                     height: 130,
                     child: Center(
@@ -952,6 +1044,15 @@ class _BottomNavBar extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (_) => const AccountScreen(),
+                      ),
+                    );
+                  }
+
+                  if (item['title'] == 'الفرص') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const OpportunitiesScreen(),
                       ),
                     );
                   }
