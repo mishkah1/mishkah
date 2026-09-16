@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-final Color backgroundColor = Color(0xF0EBDD);
-final Color baseColor = Color(0x0E4A4A);
-final Color baseColor2 = Color(0xC08552);
-final Color fontColor = Color(0x12262A);
-final Color detailsColor = Color(0xE8DCC8);
-final Color foggyGreen = Color(0x7BA89E);
+final Color backgroundColor = Color.fromARGB(255, 240, 235, 221);
+final Color baseColor = Color.fromARGB(255, 14, 74, 74);
+final Color baseColor2 = Color.fromARGB(255, 192, 133, 82);
+final Color fontColor = Color.fromARGB(255, 18, 38, 42);
+final Color detailsColor = Color.fromARGB(255, 232, 220, 200);
+final Color foggyGreen = Color.fromARGB(255, 123, 168, 158);

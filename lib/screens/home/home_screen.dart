@@ -288,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    return '${halaqa.focus.label} - ${halaqa.time.label} - ${halaqa.category.label}';
+    return '${halaqa.time.label} - ${halaqa.category.label}';
   }
 
   _HomeItem? createHalaqaItem(
@@ -712,7 +712,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: SafeArea(
+      body: 
+      SafeArea(
         top: false,
         child: ScrollConfiguration(
           behavior: const _NoStretchBehavior(),
@@ -1267,44 +1268,49 @@ class _RegistrationCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.location_on_outlined,
-                                size: 12,
-                                color: Color(0xFF9A7955),
-                              ),
-                              const SizedBox(width: 2),
-                              SizedBox(
-                                width: 70,
-                                child: Text(
-                                  location,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 9,
-                                    color: Color(0xFF777777),
+                      Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  size: 12,
+                                  color: Color(0xFF9A7955),
+                                ),
+                                const SizedBox(width: 2),
+                                SizedBox(
+                                  width: 70,
+                                  child: Text(
+                                    location,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.left,
+                                    style: const TextStyle(
+                                      fontSize: 9,
+                                      color: Color(0xFF777777),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            attendance == AttendanceType.online
-                                ? 'أونلاين'
-                                : 'حضوري',
-                            style: const TextStyle(
-                              fontSize: 9,
-                              color: Color(0xFF777777),
+                              ],
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 2),
+                            Text(
+                              attendance == AttendanceType.online
+                                  ? 'أونلاين'
+                                  : 'حضوري',
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                fontSize: 9,
+                                color: Color(0xFF777777),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -1450,19 +1456,8 @@ class _ComingSoonCard extends StatelessWidget {
                       ),
                       const Spacer(),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Expanded(
-                            child: Text(
-                              location,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Color(0xFF777777),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
                           Text(
                             attendance == AttendanceType.online
                                 ? 'أونلاين'
@@ -1470,15 +1465,6 @@ class _ComingSoonCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 10,
                               color: Color(0xFF777777),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            date,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF9A7955),
                             ),
                           ),
                         ],
