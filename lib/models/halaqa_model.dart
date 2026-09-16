@@ -1,11 +1,11 @@
 /// طريقة الحضور: حضوري أو أونلاين.
 enum AttendanceType { inPerson, online }
 
-/// الفئة المستهدفة من الحلقة (جنس المشاركين).
+/// الفئة المستهدفة من الحلقة.
 enum HalaqaCategory { female, male, kids }
 
 /// نوع الحلقة: حفظ، مراجعة، تجويد، أو ترتيل.
-enum HalaqaFocus { memorization, review, tajweed, recitation }
+enum HalaqaFocus { memorization, review, tajweed }
 
 /// وقت انعقاد الحلقة: صباحي أو مسائي.
 enum HalaqaTime { morning, evening }
@@ -23,27 +23,22 @@ enum RegistrationStatus { open, comingSoon, closed }
 class HalaqaModel {
   final String id;
   final String name;
-
-  /// null لو الحلقة أونلاين بالكامل وما تتبع دار معين.
   final String? darId;
-
   final AttendanceType attendanceType;
   final HalaqaCategory category;
   final HalaqaFocus focus;
   final HalaqaTime time;
+  final String? time2;
+  final String? time3;
   final AgeGroup ageGroup;
   final FeeType feeType;
-
-  /// خدمات الحلقات الحضورية فقط (null للحلقات الأونلاين).
   final bool? hasDaycare;
   final bool? hasParking;
   final bool? isAccessible;
-
+  final String? nisab;
   final RegistrationStatus registrationStatus;
   final String? registrationUrl;
   final String? contactPhone;
-
-  /// رابط الاجتماع (زوم مثلا) لو الحلقة أونلاين.
   final String? onlineMeetingUrl;
 
   HalaqaModel({
@@ -54,24 +49,24 @@ class HalaqaModel {
     required this.category,
     required this.focus,
     required this.time,
+    this.time2,
+    this.time3,
     required this.ageGroup,
     required this.feeType,
     this.hasDaycare,
     this.hasParking,
     this.isAccessible,
+    this.nisab,
     required this.registrationStatus,
     this.registrationUrl,
     this.contactPhone,
     this.onlineMeetingUrl,
   });
 
-  /// true لو الحلقة تابعة لدار (حضورية ومرتبطة بمكان فعلي).
   bool get belongsToDar => darId != null && darId!.isNotEmpty;
 
-  /// true لو الحلقة حضورية (وبالتالي لها خدمات موقع فعلية).
   bool get isInPerson => attendanceType == AttendanceType.inPerson;
 
-  /// true لو فيه رابط تسجيل فعلي، وإلا نعرض رقم التواصل.
   bool get hasRegistrationLink =>
       registrationUrl != null && registrationUrl!.trim().isNotEmpty;
 
@@ -92,6 +87,8 @@ class HalaqaModel {
       time: HalaqaTime.values.firstWhere(
         (e) => e.name == json['time'],
       ),
+      time2: json['time2']?.toString(),
+      time3: json['time3']?.toString(),
       ageGroup: AgeGroup.values.firstWhere(
         (e) => e.name == json['age_group'],
       ),
@@ -101,6 +98,7 @@ class HalaqaModel {
       hasDaycare: json['has_daycare'] as bool?,
       hasParking: json['has_parking'] as bool?,
       isAccessible: json['is_accessible'] as bool?,
+      nisab: json['nisab']?.toString(),
       registrationStatus: RegistrationStatus.values.firstWhere(
         (e) => e.name == json['registration_status'],
       ),
@@ -119,11 +117,14 @@ class HalaqaModel {
       'category': category.name,
       'focus': focus.name,
       'time': time.name,
+      'time2': time2,
+      'time3': time3,
       'age_group': ageGroup.name,
       'fee_type': feeType.name,
       'has_daycare': hasDaycare,
       'has_parking': hasParking,
       'is_accessible': isAccessible,
+      'nisab': nisab,
       'registration_status': registrationStatus.name,
       'registration_url': registrationUrl,
       'contact_phone': contactPhone,
@@ -142,8 +143,6 @@ extension HalaqaFocusLabel on HalaqaFocus {
         return 'مراجعة';
       case HalaqaFocus.tajweed:
         return 'تجويد';
-      case HalaqaFocus.recitation:
-        return 'ترتيل';
     }
   }
 }

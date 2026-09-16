@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, dynamic>> categories = const [
     {
-      'title': 'الترتيل',
+      'title': 'المراجعة',
       'icon': Icons.auto_stories_outlined,
     },
     {
@@ -96,7 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// يرجع مصدر الحلقات المناسب لحالة التسجيل المطلوبة.
   List<HalaqaModel> halaqasByStatus(RegistrationStatus status) {
     if (status == RegistrationStatus.open) {
       return openHalaqas;
@@ -371,9 +370,9 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    final recitationHalaqa = choosePreferredHalaqa(
+    final reviewHalaqa = choosePreferredHalaqa(
       getHalaqasByFocus(
-        HalaqaFocus.recitation,
+        HalaqaFocus.review,
         RegistrationStatus.open,
       ),
       usedIds,
@@ -381,16 +380,16 @@ class _HomeScreenState extends State<HomeScreen> {
       AttendanceType.online,
     );
 
-    if (recitationHalaqa != null) {
-      final item = createHalaqaItem(recitationHalaqa);
+    if (reviewHalaqa != null) {
+      final item = createHalaqaItem(reviewHalaqa);
 
       if (item != null) {
         items.add(item);
-        usedIds.add(recitationHalaqa.id);
+        usedIds.add(reviewHalaqa.id);
 
-        if (recitationHalaqa.darId != null &&
-            recitationHalaqa.darId!.isNotEmpty) {
-          usedDarIds.add(recitationHalaqa.darId!);
+        if (reviewHalaqa.darId != null &&
+            reviewHalaqa.darId!.isNotEmpty) {
+          usedDarIds.add(reviewHalaqa.darId!);
         }
       }
     }
@@ -443,7 +442,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    // تعبئة أي نقص من بقية الحلقات المفتوحة بقاعدة البيانات.
     if (items.length < 4) {
       final usedAttendance = <AttendanceType>{};
 
@@ -521,7 +519,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final focusList = [
       HalaqaFocus.tajweed,
       HalaqaFocus.memorization,
-      HalaqaFocus.recitation,
+      HalaqaFocus.review,
     ];
 
     for (final focus in focusList) {
@@ -559,7 +557,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    // تعبئة أي نقص من بقية حلقات "قريبًا" بقاعدة البيانات.
     while (items.length < 4) {
       final fallback = chooseComingSoonHalaqa(
         halaqasByStatus(RegistrationStatus.comingSoon),

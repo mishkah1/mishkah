@@ -123,17 +123,32 @@ class HalaqaDetailsScreen extends StatelessWidget {
 
   Widget _buildInfoGrid() {
     final items = <(String, String)>[
-      ('النوع', halaqa.focus.label),
-      ('الوقت', halaqa.time.label),
+      (
+        'الموقع',
+        halaqa.attendanceType == AttendanceType.online
+            ? 'أونلاين'
+            : (dar?.address ?? 'غير محدد'),
+      ),
+      (
+        'الحضور',
+        halaqa.attendanceType == AttendanceType.online
+            ? 'أونلاين'
+            : 'حضوري',
+      ),
+      (
+        'الوقت',
+        halaqa.attendanceType == AttendanceType.online
+            ? _onlineTimes
+            : halaqa.time.label,
+      ),
       ('الفئة', halaqa.category.label),
-if (halaqa.attendanceType == AttendanceType.inPerson)
-  (
-    'الحضانة',
-    halaqa.hasDaycare == null
-        ? 'غير محدد'
-        : (halaqa.hasDaycare! ? 'متوفرة' : 'غير متوفرة'),
-  ),
-
+      if (halaqa.attendanceType == AttendanceType.inPerson)
+        (
+          'الحضانة',
+          halaqa.hasDaycare == null
+              ? 'غير محدد'
+              : (halaqa.hasDaycare! ? 'متوفرة' : 'غير متوفرة'),
+        ),
     ];
 
     return GridView.count(
@@ -191,6 +206,18 @@ if (halaqa.attendanceType == AttendanceType.inPerson)
           )
           .toList(),
     );
+  }
+
+  String get _onlineTimes {
+    final times = <String>[
+      halaqa.time.label,
+      if (halaqa.time2 != null && halaqa.time2!.trim().isNotEmpty)
+        halaqa.time2!.trim(),
+      if (halaqa.time3 != null && halaqa.time3!.trim().isNotEmpty)
+        halaqa.time3!.trim(),
+    ];
+
+    return times.join(' - ');
   }
 
   Widget _buildContactCard() {
