@@ -210,6 +210,7 @@ class _LoginScreenState extends State<LoginScreen>
             final ambient = Curves.easeInOut.transform(_ambient.value);
 
             return Stack(
+              alignment: Alignment.center,
               children: [
                 Positioned.fill(
                   child: DecoratedBox(
@@ -400,7 +401,7 @@ class _LoginScreenState extends State<LoginScreen>
                                             keyboardType:
                                                 TextInputType.emailAddress,
                                             textDirection: TextDirection.ltr,
-                                            textAlign: TextAlign.right,
+                                            textAlign: TextAlign.center,
                                             style:
                                                 const TextStyle(color: _ivory),
                                             decoration: _fieldDecoration(
@@ -419,7 +420,7 @@ class _LoginScreenState extends State<LoginScreen>
                                             controller: passwordController,
                                             obscureText: obscurePassword,
                                             textDirection: TextDirection.ltr,
-                                            textAlign: TextAlign.right,
+                                            textAlign: TextAlign.center,
                                             style:
                                                 const TextStyle(color: _ivory),
                                             decoration: _fieldDecoration(
@@ -454,7 +455,7 @@ class _LoginScreenState extends State<LoginScreen>
                                           start: 0.60,
                                           end: 0.75,
                                           child: Align(
-                                            alignment: Alignment.centerRight,
+                                            alignment: Alignment.center,
                                             child: TextButton(
                                               onPressed:
                                                   isLoading ? null : () {},
@@ -467,6 +468,7 @@ class _LoginScreenState extends State<LoginScreen>
                                               ),
                                               child: Text(
                                                 'نسيت كلمة المرور؟',
+                                                textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   color: _goldLight,
                                                   fontSize: 12,
@@ -506,6 +508,7 @@ class _LoginScreenState extends State<LoginScreen>
                                             children: [
                                               Text(
                                                 'ليس لديك حساب؟',
+                                                textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   color: _muted,
                                                   fontSize: 12,
@@ -525,6 +528,7 @@ class _LoginScreenState extends State<LoginScreen>
                                                       },
                                                 child: Text(
                                                   'إنشاء حساب',
+                                                  textAlign: TextAlign.center,
                                                   style: TextStyle(
                                                     color: _goldLight,
                                                     fontSize: 12,
@@ -694,4 +698,4 @@ class _GradientButton extends StatelessWidget {
       ),
     );
   }
-} 
+}
