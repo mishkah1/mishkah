@@ -12,6 +12,14 @@ class FavoritesScreen extends StatefulWidget {
 class _FavoritesScreenState extends State<FavoritesScreen> {
   final LocalSavedService savedService = LocalSavedService.instance;
 
+  // ── هوية مِشكاة ──
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
+
   @override
   void initState() {
     super.initState();
@@ -35,23 +43,23 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     final favorites = savedService.favorites;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F5EF),
+      backgroundColor: _background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF24483A),
+        backgroundColor: _surface,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFFFFF8EA),
+            color: _ivory,
             size: 20,
           ),
         ),
         title: Text(
           'مفضلاتي',
-          style: GoogleFonts.cairo(
-            color: const Color(0xFFFFF8EA),
+          style: GoogleFonts.amiri(
+            color: _ivory,
             fontSize: 20,
             fontWeight: FontWeight.w700,
           ),
@@ -88,20 +96,20 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               width: 82,
               height: 82,
               decoration: BoxDecoration(
-                color: const Color(0xFFE9E2D5),
+                color: _surfaceRaised,
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.favorite_border_rounded,
-                color: Color(0xFF24483A),
+                color: _gold,
                 size: 40,
               ),
             ),
             const SizedBox(height: 18),
             Text(
               'لا توجد مفضلات بعد',
-              style: GoogleFonts.cairo(
-                color: const Color(0xFF24483A),
+              style: GoogleFonts.amiri(
+                color: _ivory,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -110,8 +118,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             Text(
               'أضف البرامج التي تهمك إلى مفضلاتك لتجدها هنا',
               textAlign: TextAlign.center,
-              style: GoogleFonts.cairo(
-                color: const Color(0xFF77736B),
+              style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _textSecondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -132,14 +141,21 @@ class _FavoriteCard extends StatelessWidget {
     required this.onRemove,
   });
 
+  static const _surface = _FavoritesScreenState._surface;
+  static const _surfaceRaised = _FavoritesScreenState._surfaceRaised;
+  static const _ivory = _FavoritesScreenState._ivory;
+  static const _textSecondary = _FavoritesScreenState._textSecondary;
+  static const _gold = Color(0xFFC6A15B);
+  static const _border = Color(0xFF2A3A32);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: const Color(0xFFE7E3D9),
+          color: _border,
         ),
       ),
       clipBehavior: Clip.antiAlias,
@@ -181,7 +197,7 @@ class _FavoriteCard extends StatelessWidget {
                       padding: EdgeInsets.all(8),
                       child: Icon(
                         Icons.favorite_rounded,
-                        color: Color(0xFFB94A48),
+                        color: Color(0xFFD8BC7A),
                         size: 22,
                       ),
                     ),
@@ -200,8 +216,9 @@ class _FavoriteCard extends StatelessWidget {
                   textAlign: TextAlign.right,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.cairo(
-                    color: const Color(0xFF24483A),
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                    color: _ivory,
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                   ),
@@ -212,8 +229,9 @@ class _FavoriteCard extends StatelessWidget {
                   textAlign: TextAlign.right,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.cairo(
-                    color: const Color(0xFF77736B),
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                    color: _textSecondary,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
@@ -227,17 +245,18 @@ class _FavoriteCard extends StatelessWidget {
                         item.location,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.cairo(
-                          color: const Color(0xFF9A7955),
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                          color: _gold,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(
+                    Icon(
                       Icons.location_on_outlined,
-                      color: Color(0xFF9A7955),
+                      color: _gold,
                       size: 16,
                     ),
                   ],
@@ -252,11 +271,11 @@ class _FavoriteCard extends StatelessWidget {
 
   Widget _imagePlaceholder() {
     return Container(
-      color: const Color(0xFFE9E2D5),
-      child: const Center(
+      color: _surfaceRaised,
+      child: Center(
         child: Icon(
           Icons.menu_book_rounded,
-          color: Color(0xFF24483A),
+          color: _gold,
           size: 42,
         ),
       ),

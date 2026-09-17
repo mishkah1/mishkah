@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mishkah/models/halaqa_model.dart';
 
 class FilterScreen extends StatefulWidget {
@@ -16,15 +17,20 @@ class FilterScreen extends StatefulWidget {
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  static const _green = Color(0xFF24483A);
-  static const _deepGreen = Color(0xFF18382D);
-  static const _cream = Color(0xFFF7F5EF);
-  static const _card = Color(0xFFFFFEFB);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF8A8478);
-  static const _sand = Color(0xFF9A7955);
-  static const _border = Color(0xFFE9E3D7);
-  static const _selectedBg = Color(0xFFE8EFEA);
+  // ── هوية مِشكاة: نفس ألوان الشاشة الرئيسية ──
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _goldLight = Color(0xFFD8BC7A);
+  static const _sand = Color(0xFFC0A06A);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
+  static const _textMuted = Color(0xFF7E8882);
+  static const _selectedBg = Color(0xFF23201A);
+  static const _headerGradientStart = Color(0xFF101916);
+  static const _headerGradientEnd = Color(0xFF263D32);
 
   AttendanceType? selectedAttendance;
   HalaqaTime? selectedTime;
@@ -215,7 +221,7 @@ class _FilterScreenState extends State<FilterScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: _green,
+        backgroundColor: _background,
         body: SafeArea(
           top: false,
           child: Column(
@@ -224,7 +230,7 @@ class _FilterScreenState extends State<FilterScreen> {
               Expanded(
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: _cream,
+                    color: _background,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
@@ -633,7 +639,13 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Widget _buildHeader() {
     return Container(
-      color: _green,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [_headerGradientStart, _headerGradientEnd],
+        ),
+      ),
       padding: EdgeInsets.fromLTRB(
         20,
         MediaQuery.of(context).padding.top + 10,
@@ -649,10 +661,11 @@ class _FilterScreenState extends State<FilterScreen> {
                 () => Navigator.pop(context),
               ),
               const Spacer(),
-              const Text(
+              Text(
                 'تصفية الحلقات',
                 style: TextStyle(
-                  color: Colors.white,
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                  color: _ivory,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                 ),
@@ -669,10 +682,10 @@ class _FilterScreenState extends State<FilterScreen> {
             alignment: Alignment.centerRight,
             child: Text(
               'اختاري ما يناسبك',
-              style: TextStyle(
-                color: Colors.white.withOpacity(.98),
+              style: GoogleFonts.amiri(
                 fontSize: 25,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w700,
+                color: _ivory,
               ),
             ),
           ),
@@ -683,7 +696,8 @@ class _FilterScreenState extends State<FilterScreen> {
               'خصصي بحثك عن حلقات ${widget.category} بالطريقة التي تناسبك.',
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: Colors.white.withOpacity(.72),
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _textSecondary,
                 fontSize: 12,
                 height: 1.6,
               ),
@@ -698,10 +712,10 @@ class _FilterScreenState extends State<FilterScreen> {
                 vertical: 7,
               ),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(.10),
+                color: _gold.withOpacity(.12),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.white.withOpacity(.12),
+                  color: _gold.withOpacity(.30),
                 ),
               ),
               child: Row(
@@ -712,15 +726,16 @@ class _FilterScreenState extends State<FilterScreen> {
                         ? Icons.tune_rounded
                         : Icons.auto_awesome_outlined,
                     size: 14,
-                    color: const Color(0xFFE6D2AE),
+                    color: _goldLight,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     hasAnyFilter
                         ? '$activeFilterCount فلاتر محددة'
                         : 'ابدئي باختيار ما يناسبك',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                      color: _ivory,
                       fontSize: 10.5,
                       fontWeight: FontWeight.w600,
                     ),
@@ -739,7 +754,7 @@ class _FilterScreenState extends State<FilterScreen> {
     VoidCallback onTap,
   ) {
     return Material(
-      color: Colors.white.withOpacity(.10),
+      color: Colors.white.withOpacity(.08),
       borderRadius: BorderRadius.circular(13),
       child: InkWell(
         onTap: onTap,
@@ -749,7 +764,7 @@ class _FilterScreenState extends State<FilterScreen> {
           height: 40,
           child: Icon(
             icon,
-            color: Colors.white,
+            color: _ivory,
             size: 20,
           ),
         ),
@@ -766,12 +781,12 @@ class _FilterScreenState extends State<FilterScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
       decoration: BoxDecoration(
-        color: _card,
+        color: _surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: _border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.025),
+            color: Colors.black.withOpacity(.20),
             blurRadius: 18,
             offset: const Offset(0, 7),
           ),
@@ -786,12 +801,12 @@ class _FilterScreenState extends State<FilterScreen> {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: _selectedBg,
+                  color: _gold.withOpacity(.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
-                  color: _green,
+                  color: _gold,
                   size: 19,
                 ),
               ),
@@ -803,8 +818,9 @@ class _FilterScreenState extends State<FilterScreen> {
                     Text(
                       title,
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        color: _text,
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                        color: _ivory,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
                       ),
@@ -813,8 +829,9 @@ class _FilterScreenState extends State<FilterScreen> {
                     Text(
                       subtitle,
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        color: _muted,
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                        color: _sand,
                         fontSize: 10.5,
                       ),
                     ),
@@ -840,10 +857,10 @@ class _FilterScreenState extends State<FilterScreen> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       decoration: BoxDecoration(
-        color: selected ? _selectedBg : const Color(0xFFFCFBF8),
+        color: selected ? _selectedBg : _surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: selected ? _green : _border,
+          color: selected ? _gold : _border,
           width: selected ? 1.3 : 1,
         ),
       ),
@@ -861,12 +878,12 @@ class _FilterScreenState extends State<FilterScreen> {
                   width: 39,
                   height: 39,
                   decoration: BoxDecoration(
-                    color: selected ? _green : Colors.white,
+                    color: selected ? _gold : _surfaceRaised,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     icon,
-                    color: selected ? Colors.white : _sand,
+                    color: selected ? _background : _textMuted,
                     size: 19,
                   ),
                 ),
@@ -877,8 +894,10 @@ class _FilterScreenState extends State<FilterScreen> {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          color: _text,
+                        style: TextStyle(
+                          fontFamily:
+                              GoogleFonts.ibmPlexSansArabic().fontFamily,
+                          color: _ivory,
                           fontSize: 12.5,
                           fontWeight: FontWeight.w800,
                         ),
@@ -886,8 +905,10 @@ class _FilterScreenState extends State<FilterScreen> {
                       const SizedBox(height: 3),
                       Text(
                         subtitle,
-                        style: const TextStyle(
-                          color: _muted,
+                        style: TextStyle(
+                          fontFamily:
+                              GoogleFonts.ibmPlexSansArabic().fontFamily,
+                          color: _textSecondary,
                           fontSize: 10,
                         ),
                       ),
@@ -898,7 +919,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   selected
                       ? Icons.check_circle_rounded
                       : Icons.radio_button_off_rounded,
-                  color: selected ? _green : const Color(0xFFD2CDC2),
+                  color: selected ? _gold : _textMuted,
                   size: 20,
                 ),
               ],
@@ -924,7 +945,7 @@ class _FilterScreenState extends State<FilterScreen> {
     VoidCallback onTap,
   ) {
     return Material(
-      color: selected ? _green : const Color(0xFFFCFBF8),
+      color: selected ? _gold : _surface,
       borderRadius: BorderRadius.circular(13),
       child: InkWell(
         onTap: onTap,
@@ -937,7 +958,7 @@ class _FilterScreenState extends State<FilterScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(13),
             border: Border.all(
-              color: selected ? _green : _border,
+              color: selected ? _gold : _border,
             ),
           ),
           child: Row(
@@ -946,13 +967,14 @@ class _FilterScreenState extends State<FilterScreen> {
               Icon(
                 icon,
                 size: 15,
-                color: selected ? Colors.white : _sand,
+                color: selected ? _background : _sand,
               ),
               const SizedBox(width: 6),
               Text(
                 title,
                 style: TextStyle(
-                  color: selected ? Colors.white : _text,
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                  color: selected ? _background : _ivory,
                   fontSize: 10.5,
                   fontWeight:
                       selected ? FontWeight.w800 : FontWeight.w600,
@@ -978,10 +1000,10 @@ class _FilterScreenState extends State<FilterScreen> {
         vertical: 7,
       ),
       decoration: BoxDecoration(
-        color: value ? _selectedBg : const Color(0xFFFCFBF8),
+        color: value ? _selectedBg : _surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: value ? _green : _border,
+          color: value ? _gold : _border,
         ),
       ),
       child: Row(
@@ -989,14 +1011,14 @@ class _FilterScreenState extends State<FilterScreen> {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeTrackColor: _green,
-            activeThumbColor: Colors.white,
+            activeTrackColor: _gold,
+            activeThumbColor: _ivory,
           ),
           const SizedBox(width: 5),
           Icon(
             icon,
             size: 18,
-            color: value ? _green : _sand,
+            color: value ? _gold : _sand,
           ),
           const SizedBox(width: 9),
           Expanded(
@@ -1004,7 +1026,8 @@ class _FilterScreenState extends State<FilterScreen> {
               title,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: _text,
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _ivory,
                 fontSize: 11.5,
                 fontWeight: value ? FontWeight.w700 : FontWeight.w500,
               ),
@@ -1023,15 +1046,15 @@ class _FilterScreenState extends State<FilterScreen> {
         vertical: 12,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF8F3),
+        color: _surfaceRaised,
         borderRadius: BorderRadius.circular(13),
         border: Border.all(color: _border),
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.info_outline_rounded,
-            color: _muted,
+            color: _textMuted,
             size: 17,
           ),
           const SizedBox(width: 8),
@@ -1039,8 +1062,9 @@ class _FilterScreenState extends State<FilterScreen> {
             child: Text(
               text,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                color: _muted,
+              style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _textMuted,
                 fontSize: 10.5,
               ),
             ),
@@ -1064,12 +1088,12 @@ class _FilterScreenState extends State<FilterScreen> {
           vertical: 9,
         ),
         decoration: BoxDecoration(
-          color: _card,
+          color: _surface,
           borderRadius: BorderRadius.circular(19),
           border: Border.all(color: _border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(.06),
+              color: Colors.black.withOpacity(.20),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -1081,18 +1105,20 @@ class _FilterScreenState extends State<FilterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'النتائج المتاحة',
                     style: TextStyle(
-                      color: _muted,
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                      color: _textMuted,
                       fontSize: 9.5,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${filteredResults.length} حلقة',
-                    style: const TextStyle(
-                      color: _text,
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                      color: _ivory,
                       fontSize: 15,
                       fontWeight: FontWeight.w900,
                     ),
@@ -1105,8 +1131,8 @@ class _FilterScreenState extends State<FilterScreen> {
               child: ElevatedButton(
                 onPressed: applyFilter,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _deepGreen,
-                  foregroundColor: Colors.white,
+                  backgroundColor: _gold,
+                  foregroundColor: _background,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 22,
@@ -1125,7 +1151,8 @@ class _FilterScreenState extends State<FilterScreen> {
                     const SizedBox(width: 7),
                     Text(
                       hasAnyFilter ? 'تطبيق الفلاتر' : 'عرض الحلقات',
-                      style: const TextStyle(
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                         fontSize: 11.5,
                         fontWeight: FontWeight.w800,
                       ),

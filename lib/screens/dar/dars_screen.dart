@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:mishkah/models/dar_model.dart';
 import 'package:mishkah/models/halaqa_model.dart';
 import 'package:mishkah/repositories/dar_repository.dart';
@@ -19,24 +21,26 @@ class DarsScreen extends StatefulWidget {
 }
 
 class _DarsScreenState extends State<DarsScreen> {
-  static const _darkGreen = Color(0xFF24483A);
-  static const _cream = Color(0xFFF7F5EF);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF817B70);
-  static const _brown = Color(0xFF9A7955);
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceElevated = Color(0xFF1B2B24);
+  static const _darkGreen = Color(0xFF2C5142);
+  static const _gold = Color(0xFFC6A15B);
+  static const _goldLight = Color(0xFFD8BC7A);
+  static const _cream = Color(0xFFF4EFE3);
+  static const _text = Color(0xFFF4EFE3);
+  static const _muted = Color(0xFFA8B0AA);
+  static const _border = Color(0xFF293A32);
 
   final DarRepository repository = DarRepository();
   final TextEditingController searchController = TextEditingController();
 
   List<DarModel> dars = [];
   List<HalaqaModel> halaqas = [];
-
   List<HalaqaModel>? filteredHalaqasFromFilter;
   List<DarModel>? filteredDarsFromFilter;
-
   String? filterName;
   String? filterAddress;
-
   bool isLoading = true;
 
   bool get isDarCategory => widget.category == 'الدور';
@@ -59,6 +63,21 @@ class _DarsScreenState extends State<DarsScreen> {
     }
   }
 
+  String get pageDescription {
+    switch (widget.category) {
+      case 'الدور':
+        return 'اكتشفي الدور والبرامج المتاحة لك';
+      case 'التجويد':
+        return 'حلقات التجويد المتاحة للتسجيل';
+      case 'الحفظ':
+        return 'حلقات حفظ القرآن المتاحة للتسجيل';
+      case 'المراجعة':
+        return 'حلقات مراجعة القرآن المتاحة للتسجيل';
+      default:
+        return 'اكتشفي البرامج المتاحة لك';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -76,9 +95,7 @@ class _DarsScreenState extends State<DarsScreen> {
     try {
       if (isDarCategory) {
         final result = await repository.fetchAllDars();
-
         if (!mounted) return;
-
         setState(() {
           dars = result;
           isLoading = false;
@@ -93,21 +110,16 @@ class _DarsScreenState extends State<DarsScreen> {
         final darResult = results[1] as List<DarModel>;
 
         if (!mounted) return;
-
         setState(() {
           dars = darResult;
           halaqas = halaqaResult
-              .where(
-                (halaqa) => halaqa.focus == selectedFocus,
-              )
+              .where((halaqa) => halaqa.focus == selectedFocus)
               .toList();
-
           isLoading = false;
         });
       }
     } catch (e) {
       if (!mounted) return;
-
       setState(() {
         isLoading = false;
       });
@@ -127,8 +139,7 @@ class _DarsScreenState extends State<DarsScreen> {
     }
 
     return baseList.where((dar) {
-      return dar.name.contains(query) ||
-          dar.address.contains(query);
+      return dar.name.contains(query) || dar.address.contains(query);
     }).toList();
   }
 
@@ -145,21 +156,6 @@ class _DarsScreenState extends State<DarsScreen> {
           halaqa.focus.label.contains(query) ||
           halaqa.category.label.contains(query);
     }).toList();
-  }
-
-  String get pageDescription {
-    switch (widget.category) {
-      case 'الدور':
-        return 'اكتشفي الدور والبرامج المتاحة لك';
-      case 'التجويد':
-        return 'حلقات التجويد المتاحة للتسجيل';
-      case 'الحفظ':
-        return 'حلقات حفظ القرآن المتاحة للتسجيل';
-      case 'المراجعة':
-        return 'حلقات مراجعة القرآن المتاحة للتسجيل';
-      default:
-        return 'اكتشفي البرامج المتاحة لك';
-    }
   }
 
   Future<void> openFilter() async {
@@ -204,10 +200,12 @@ class _DarsScreenState extends State<DarsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          backgroundColor: _surfaceElevated,
           content: Text(
             'تعذر تحميل حلقات الدار',
             textDirection: TextDirection.rtl,
             textAlign: TextAlign.right,
+            style: TextStyle(color: _cream),
           ),
         ),
       );
@@ -242,6 +240,33 @@ class _DarsScreenState extends State<DarsScreen> {
     );
   }
 
+  TextStyle _font({
+    double size = 14,
+    FontWeight weight = FontWeight.w400,
+    Color color = _text,
+    double height = 1.35,
+  }) {
+    return GoogleFonts.ibmPlexSansArabic(
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+      height: height,
+    );
+  }
+
+  TextStyle _displayFont({
+    double size = 24,
+    FontWeight weight = FontWeight.w700,
+    Color color = _cream,
+  }) {
+    return GoogleFonts.amiri(
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+      height: 1.15,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final darResults = filteredDars;
@@ -250,183 +275,103 @@ class _DarsScreenState extends State<DarsScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: _cream,
+        backgroundColor: _background,
         appBar: AppBar(
-          backgroundColor: _darkGreen,
+          backgroundColor: _background,
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_forward,
-              color: Colors.white,
-            ),
-          ),
+          scrolledUnderElevation: 0,
           title: Text(
             widget.category,
             textDirection: TextDirection.rtl,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
+            textAlign: TextAlign.center,
+            style: _displayFont(
+              size: 22,
+              weight: FontWeight.w700,
             ),
           ),
           centerTitle: true,
-        ),
-        body: isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: _darkGreen,
-                ),
-              )
-            : ListView(
-                padding: const EdgeInsets.fromLTRB(
-                  18,
-                  22,
-                  18,
-                  28,
-                ),
-                children: [
-                  Text(
-                    widget.category,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: _text,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    pageDescription,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: _muted,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: searchController,
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.right,
-                          decoration: InputDecoration(
-                            hintText: isDarCategory
-                                ? 'ابحثي عن دار أو حي...'
-                                : 'ابحثي عن حلقة...',
-                            hintTextDirection: TextDirection.rtl,
-                            hintStyle: const TextStyle(
-                              color: _muted,
-                              fontSize: 12,
-                            ),
-                            prefixIcon: const Icon(
-                              Icons.search,
-                              color: _muted,
-                              size: 20,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 13,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE7E3D9),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE7E3D9),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(
-                                color: _darkGreen,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (hasHalaqaFilter) ...[
-                        const SizedBox(width: 9),
-                        InkWell(
-                          onTap: openFilter,
-                          borderRadius: BorderRadius.circular(14),
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: const Color(0xFFE7E3D9),
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.tune_rounded,
-                              color: _darkGreen,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    textDirection: TextDirection.rtl,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        isDarCategory
-                            ? '${darResults.length} دار'
-                            : '${halaqaResults.length} حلقة',
-                        textDirection: TextDirection.rtl,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: _muted,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (!isDarCategory)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE8EFEA),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            widget.category,
-                            textDirection: TextDirection.rtl,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: _darkGreen,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (isDarCategory)
-                    _buildDars(darResults)
-                  else
-                    _buildHalaqas(halaqaResults),
-                ],
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(left: 10, top: 8, bottom: 8),
+              child: _CircleIconButton(
+                icon: Icons.arrow_back_ios_new_rounded,
+                onTap: () => Navigator.pop(context),
               ),
+            ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            const Positioned.fill(
+              child: IgnorePointer(
+                child: _MishkahBackground(),
+              ),
+            ),
+            SafeArea(
+              top: false,
+              child: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: _gold,
+                        strokeWidth: 2.2,
+                      ),
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(18, 10, 18, 30),
+                      children: [
+                        _PageIntro(
+                          category: widget.category,
+                          description: pageDescription,
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          textDirection: TextDirection.rtl,
+                          children: [
+                            Expanded(
+                              child: _SearchField(
+                                controller: searchController,
+                                isDarCategory: isDarCategory,
+                              ),
+                            ),
+                            if (hasHalaqaFilter) ...[
+                              const SizedBox(width: 9),
+                              _FilterButton(onTap: openFilter),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 17),
+                        Row(
+                          textDirection: TextDirection.rtl,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              isDarCategory
+                                  ? '${darResults.length} دار'
+                                  : '${halaqaResults.length} حلقة',
+                              textDirection: TextDirection.rtl,
+                              style: _font(
+                                size: 12,
+                                weight: FontWeight.w600,
+                                color: _muted,
+                              ),
+                            ),
+                            if (!isDarCategory)
+                              _CategoryPill(
+                                label: widget.category,
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        if (isDarCategory)
+                          _buildDars(darResults)
+                        else
+                          _buildHalaqas(halaqaResults),
+                      ],
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -475,6 +420,230 @@ class _DarsScreenState extends State<DarsScreen> {
   }
 }
 
+class _PageIntro extends StatelessWidget {
+  final String category;
+  final String description;
+
+  const _PageIntro({
+    required this.category,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            category,
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.right,
+            style: GoogleFonts.amiri(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFFF4EFE3),
+              height: 1.15,
+            ),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            textDirection: TextDirection.rtl,
+            children: [
+              Flexible(
+                child: Text(
+                  description,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.ibmPlexSansArabic(
+                    fontSize: 12,
+                    color: const Color(0xFFA8B0AA),
+                    height: 1.55,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 24,
+                height: 1,
+                color: const Color(0xFFC6A15B).withOpacity(0.55),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final bool isDarCategory;
+
+  const _SearchField({
+    required this.controller,
+    required this.isDarCategory,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: const Color(0xFF15221C).withOpacity(0.96),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: const Color(0xFF293A32),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.18),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.right,
+        cursorColor: const Color(0xFFC6A15B),
+        style: GoogleFonts.ibmPlexSansArabic(
+          fontSize: 12,
+          color: const Color(0xFFF4EFE3),
+        ),
+        decoration: InputDecoration(
+          hintText: isDarCategory
+              ? 'ابحثي عن دار أو حي...'
+              : 'ابحثي عن حلقة...',
+          hintTextDirection: TextDirection.rtl,
+          hintStyle: GoogleFonts.ibmPlexSansArabic(
+            color: const Color(0xFF7F8A84),
+            fontSize: 12,
+          ),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: Color(0xFFC6A15B),
+            size: 20,
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 13,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FilterButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _FilterButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(15),
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: const Color(0xFF15221C),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: const Color(0xFF293A32),
+          ),
+        ),
+        child: const Icon(
+          Icons.tune_rounded,
+          color: Color(0xFFC6A15B),
+          size: 20,
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryPill extends StatelessWidget {
+  final String label;
+
+  const _CategoryPill({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 11,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFC6A15B).withOpacity(0.11),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFC6A15B).withOpacity(0.25),
+        ),
+      ),
+      child: Text(
+        label,
+        textDirection: TextDirection.rtl,
+        style: GoogleFonts.ibmPlexSansArabic(
+          fontSize: 10,
+          color: const Color(0xFFD8BC7A),
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+class _CircleIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _CircleIconButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF15221C),
+            border: Border.all(
+              color: const Color(0xFFC6A15B).withOpacity(0.25),
+              width: 0.8,
+            ),
+          ),
+          child: const Icon(
+            Icons.arrow_forward_ios_rounded,
+            color: Color(0xFFF4EFE3),
+            size: 16,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _DarCard extends StatelessWidget {
   final DarModel dar;
   final VoidCallback onTap;
@@ -484,10 +653,12 @@ class _DarCard extends StatelessWidget {
     required this.onTap,
   });
 
-  static const _darkGreen = Color(0xFF24483A);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF817B70);
-  static const _brown = Color(0xFF9A7955);
+  static const _gold = Color(0xFFC6A15B);
+  static const _cream = Color(0xFFF4EFE3);
+  static const _muted = Color(0xFFA8B0AA);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceElevated = Color(0xFF1B2B24);
+  static const _border = Color(0xFF293A32);
 
   @override
   Widget build(BuildContext context) {
@@ -495,16 +666,16 @@ class _DarCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(19),
+        color: _surface.withOpacity(0.97),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFE7E3D9),
+          color: _border,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.035),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.18),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -515,16 +686,19 @@ class _DarCard extends StatelessWidget {
             textDirection: TextDirection.rtl,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0ECE3),
-                  borderRadius: BorderRadius.circular(13),
+                  color: _surfaceElevated,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: _gold.withOpacity(0.15),
+                  ),
                 ),
                 child: const Icon(
                   Icons.mosque_outlined,
-                  color: _darkGreen,
-                  size: 22,
+                  color: _gold,
+                  size: 23,
                 ),
               ),
               const SizedBox(width: 11),
@@ -533,17 +707,17 @@ class _DarCard extends StatelessWidget {
                   dar.name,
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(
+                  style: GoogleFonts.ibmPlexSansArabic(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: _text,
+                    color: _cream,
                     height: 1.4,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 13),
+          const SizedBox(height: 14),
           Row(
             textDirection: TextDirection.rtl,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -551,7 +725,7 @@ class _DarCard extends StatelessWidget {
               const Icon(
                 Icons.location_on_outlined,
                 size: 17,
-                color: _brown,
+                color: _gold,
               ),
               const SizedBox(width: 6),
               Expanded(
@@ -559,34 +733,37 @@ class _DarCard extends StatelessWidget {
                   dar.address,
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(
+                  style: GoogleFonts.ibmPlexSansArabic(
                     fontSize: 12,
                     color: _muted,
-                    height: 1.5,
+                    height: 1.55,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 15),
           SizedBox(
             width: double.infinity,
-            height: 43,
+            height: 44,
             child: ElevatedButton(
               onPressed: onTap,
               style: ElevatedButton.styleFrom(
-                backgroundColor: _darkGreen,
-                foregroundColor: const Color(0xFFFFF8EA),
+                backgroundColor: const Color(0xFF2C5142),
+                foregroundColor: _cream,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(13),
+                  borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(
+                    color: _gold.withOpacity(0.18),
+                  ),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'عرض التفاصيل',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: GoogleFonts.ibmPlexSansArabic(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
@@ -610,9 +787,12 @@ class _HalaqaCard extends StatelessWidget {
     required this.onTap,
   });
 
-  static const _darkGreen = Color(0xFF24483A);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF817B70);
+  static const _gold = Color(0xFFC6A15B);
+  static const _cream = Color(0xFFF4EFE3);
+  static const _muted = Color(0xFFA8B0AA);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceElevated = Color(0xFF1B2B24);
+  static const _border = Color(0xFF293A32);
 
   @override
   Widget build(BuildContext context) {
@@ -622,48 +802,58 @@ class _HalaqaCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(19),
+        color: _surface.withOpacity(0.97),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFE7E3D9),
+          color: _border,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.035),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.18),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              dar?.name ?? 'دار غير محددة',
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 11,
-                color: _muted,
-                fontWeight: FontWeight.w500,
+          Row(
+            textDirection: TextDirection.rtl,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: _gold,
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
+              const SizedBox(width: 7),
+              Expanded(
+                child: Text(
+                  dar?.name ?? 'دار غير محددة',
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.ibmPlexSansArabic(
+                    fontSize: 11,
+                    color: _muted,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              halaqa.name,
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: _darkGreen,
-                height: 1.4,
-              ),
+          const SizedBox(height: 5),
+          Text(
+            halaqa.name,
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.right,
+            style: GoogleFonts.amiri(
+              fontSize: 21,
+              fontWeight: FontWeight.w700,
+              color: _cream,
+              height: 1.2,
             ),
           ),
           const SizedBox(height: 14),
@@ -674,10 +864,10 @@ class _HalaqaCard extends StatelessWidget {
               vertical: 13,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F6F0),
-              borderRadius: BorderRadius.circular(14),
+              color: _surfaceElevated,
+              borderRadius: BorderRadius.circular(15),
               border: Border.all(
-                color: const Color(0xFFEAE4D8),
+                color: _border,
               ),
             ),
             child: Row(
@@ -694,7 +884,7 @@ class _HalaqaCard extends StatelessWidget {
                   Container(
                     width: 1,
                     height: 38,
-                    color: const Color(0xFFE1DACC),
+                    color: _border,
                   ),
                 ],
                 Expanded(
@@ -709,7 +899,7 @@ class _HalaqaCard extends StatelessWidget {
                 Container(
                   width: 1,
                   height: 38,
-                  color: const Color(0xFFE1DACC),
+                  color: _border,
                 ),
                 Expanded(
                   child: _InfoItem(
@@ -724,22 +914,25 @@ class _HalaqaCard extends StatelessWidget {
           const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
-            height: 43,
+            height: 44,
             child: ElevatedButton(
               onPressed: onTap,
               style: ElevatedButton.styleFrom(
-                backgroundColor: _darkGreen,
-                foregroundColor: const Color(0xFFFFF8EA),
+                backgroundColor: const Color(0xFF2C5142),
+                foregroundColor: _cream,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(13),
+                  borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(
+                    color: _gold.withOpacity(0.18),
+                  ),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'عرض التفاصيل',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: GoogleFonts.ibmPlexSansArabic(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
@@ -763,9 +956,9 @@ class _InfoItem extends StatelessWidget {
     required this.value,
   });
 
-  static const _darkGreen = Color(0xFF24483A);
-  static const _muted = Color(0xFF817B70);
-  static const _text = Color(0xFF25231E);
+  static const _gold = Color(0xFFC6A15B);
+  static const _muted = Color(0xFFA8B0AA);
+  static const _cream = Color(0xFFF4EFE3);
 
   @override
   Widget build(BuildContext context) {
@@ -775,14 +968,14 @@ class _InfoItem extends StatelessWidget {
         Icon(
           icon,
           size: 17,
-          color: _darkGreen,
+          color: _gold,
         ),
         const SizedBox(height: 5),
         Text(
           title,
           textDirection: TextDirection.rtl,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: GoogleFonts.ibmPlexSansArabic(
             fontSize: 9.5,
             color: _muted,
           ),
@@ -794,10 +987,11 @@ class _InfoItem extends StatelessWidget {
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style: GoogleFonts.ibmPlexSansArabic(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: _text,
+            color: _cream,
+            height: 1.3,
           ),
         ),
       ],
@@ -824,28 +1018,39 @@ class _EmptyState extends StatelessWidget {
         vertical: 42,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(19),
+        color: const Color(0xFF15221C).withOpacity(0.97),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFE7E3D9),
+          color: const Color(0xFF293A32),
         ),
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            size: 40,
-            color: const Color(0xFF9A7955),
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFC6A15B).withOpacity(0.09),
+              border: Border.all(
+                color: const Color(0xFFC6A15B).withOpacity(0.18),
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 27,
+              color: const Color(0xFFC6A15B),
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Text(
             title,
             textDirection: TextDirection.rtl,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: GoogleFonts.ibmPlexSansArabic(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF25231E),
+              color: const Color(0xFFF4EFE3),
             ),
           ),
           const SizedBox(height: 6),
@@ -853,13 +1058,106 @@ class _EmptyState extends StatelessWidget {
             subtitle,
             textDirection: TextDirection.rtl,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: GoogleFonts.ibmPlexSansArabic(
               fontSize: 12,
-              color: Color(0xFF817B70),
+              color: const Color(0xFFA8B0AA),
+              height: 1.5,
             ),
           ),
         ],
       ),
     );
   }
+}
+
+class _MishkahBackground extends StatelessWidget {
+  const _MishkahBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _MishkahBackgroundPainter(),
+    );
+  }
+}
+
+class _MishkahBackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final softGold = Paint()
+      ..color = const Color(0xFFC6A15B).withOpacity(0.035)
+      ..style = PaintingStyle.fill;
+
+    final softGreen = Paint()
+      ..color = const Color(0xFF2C5142).withOpacity(0.08)
+      ..style = PaintingStyle.fill;
+
+    final line = Paint()
+      ..color = const Color(0xFFC6A15B).withOpacity(0.035)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    canvas.drawCircle(
+      Offset(size.width * 0.88, size.height * 0.08),
+      size.width * 0.48,
+      softGreen,
+    );
+
+    canvas.drawCircle(
+      Offset(size.width * 0.06, size.height * 0.58),
+      size.width * 0.40,
+      softGold,
+    );
+
+    const spacing = 62.0;
+
+    for (double x = -spacing; x < size.width + spacing; x += spacing) {
+      for (double y = -spacing; y < size.height + spacing; y += spacing) {
+        final center = Offset(x, y);
+
+        final path = Path()
+          ..moveTo(center.dx, center.dy - 13)
+          ..lineTo(center.dx + 13, center.dy)
+          ..lineTo(center.dx, center.dy + 13)
+          ..lineTo(center.dx - 13, center.dy)
+          ..close();
+
+        canvas.drawPath(path, line);
+
+        final inner = Path()
+          ..moveTo(center.dx, center.dy - 6)
+          ..lineTo(center.dx + 6, center.dy)
+          ..lineTo(center.dx, center.dy + 6)
+          ..lineTo(center.dx - 6, center.dy)
+          ..close();
+
+        canvas.drawPath(inner, line);
+      }
+    }
+
+    final archPaint = Paint()
+      ..color = const Color(0xFFF4EFE3).withOpacity(0.02)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+
+    final archWidth = size.width * 0.34;
+
+    final arch = Path()
+      ..moveTo(size.width - archWidth - 24, size.height * 0.70)
+      ..lineTo(size.width - archWidth - 24, size.height * 0.84)
+      ..cubicTo(
+        size.width - archWidth - 24,
+        size.height * 0.57,
+        size.width - 24,
+        size.height * 0.57,
+        size.width - 24,
+        size.height * 0.84,
+      )
+      ..lineTo(size.width - 24, size.height * 0.70);
+
+    canvas.drawPath(arch, archPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

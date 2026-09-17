@@ -13,6 +13,14 @@ class MyRegistrationsScreen extends StatefulWidget {
 class _MyRegistrationsScreenState extends State<MyRegistrationsScreen> {
   final LocalSavedService savedService = LocalSavedService.instance;
 
+  // ── هوية مِشكاة ──
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
+
   @override
   void initState() {
     super.initState();
@@ -36,23 +44,23 @@ class _MyRegistrationsScreenState extends State<MyRegistrationsScreen> {
     final registrations = savedService.registrations;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F5EF),
+      backgroundColor: _background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF24483A),
+        backgroundColor: _surface,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_forward,
-            color: Color(0xFFFFF8EA),
+            color: _ivory,
           ),
         ),
         title: Text(
           'تسجيلاتي',
-          style: GoogleFonts.cairo(
-            color: const Color(0xFFFFF8EA),
-            fontSize: 16,
+          style: GoogleFonts.amiri(
+            color: _ivory,
+            fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -67,32 +75,33 @@ class _MyRegistrationsScreenState extends State<MyRegistrationsScreen> {
                     Container(
                       width: 70,
                       height: 70,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE8EEE9),
+                      decoration: BoxDecoration(
+                        color: _surfaceRaised,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.assignment_outlined,
                         size: 32,
-                        color: Color(0xFF24483A),
+                        color: _gold,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'لا توجد تسجيلات',
-                      style: GoogleFonts.cairo(
-                        fontSize: 16,
+                      style: GoogleFonts.amiri(
+                        fontSize: 17,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF24483A),
+                        color: _ivory,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       'عند التسجيل في إحدى الحلقات ستظهر هنا',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.cairo(
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                         fontSize: 12,
-                        color: const Color(0xFF777777),
+                        color: _textSecondary,
                       ),
                     ),
                   ],
@@ -120,14 +129,21 @@ class _RegistrationCard extends StatelessWidget {
     required this.item,
   });
 
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: const Color(0xFFE7E3D9),
+          color: _border,
         ),
       ),
       clipBehavior: Clip.antiAlias,
@@ -163,10 +179,11 @@ class _RegistrationCard extends StatelessWidget {
                     item.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF24483A),
+                      color: _ivory,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -174,19 +191,20 @@ class _RegistrationCard extends StatelessWidget {
                     item.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                       fontSize: 11,
-                      color: const Color(0xFF777777),
+                      color: _textSecondary,
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.location_on_outlined,
                         size: 15,
-                        color: Color(0xFF9A7955),
+                        color: _gold,
                       ),
                       const SizedBox(width: 4),
                       Expanded(
@@ -194,9 +212,10 @@ class _RegistrationCard extends StatelessWidget {
                           item.location,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                             fontSize: 10.5,
-                            color: const Color(0xFF777777),
+                            color: _textSecondary,
                           ),
                         ),
                       ),
@@ -207,15 +226,19 @@ class _RegistrationCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE8EEE9),
+                          color: _gold.withOpacity(.14),
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _gold.withOpacity(.30),
+                          ),
                         ),
                         child: Text(
                           'تم التسجيل',
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                             fontSize: 9.5,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF24483A),
+                            color: const Color(0xFFD8BC7A),
                           ),
                         ),
                       ),
@@ -232,11 +255,11 @@ class _RegistrationCard extends StatelessWidget {
 
   Widget _imagePlaceholder() {
     return Container(
-      color: const Color(0xFFE8E4D9),
-      child: const Center(
+      color: _surfaceRaised,
+      child: Center(
         child: Icon(
           Icons.menu_book_outlined,
-          color: Color(0xFF24483A),
+          color: _gold,
           size: 34,
         ),
       ),

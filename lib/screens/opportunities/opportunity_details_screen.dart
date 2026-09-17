@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../models/opportunity_model.dart';
 import 'opportunity_registration_screen.dart';
 
@@ -8,28 +9,34 @@ class OpportunityDetailsScreen extends StatelessWidget {
 
   const OpportunityDetailsScreen({super.key, required this.opportunity});
 
-  static const _darkGreen = Color(0xFF0F3D30);
-  static const _cream = Color(0xFFF7F3EA);
-  static const _gold = Color(0xFFD9A441);
-  static const _muted = Color(0xFF8A8470);
-  static const _border = Color(0xFFE7DFC9);
+  // ── هوية مِشكاة ──
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textMuted = Color(0xFF7E8882);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _cream,
+      backgroundColor: _background,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: _darkGreen,
+            backgroundColor: _surface,
             expandedHeight: 90,
             pinned: true,
             leading: IconButton(
               icon: const Icon(Icons.arrow_forward, color: _gold),
               onPressed: () => Navigator.pop(context),
             ),
-            title: const Text('تفاصيل الفرصة',
-                style: TextStyle(color: _cream, fontSize: 14)),
+            title: Text('تفاصيل الفرصة',
+                style: TextStyle(
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                    color: _ivory,
+                    fontSize: 14)),
             centerTitle: true,
           ),
           SliverToBoxAdapter(
@@ -63,7 +70,7 @@ class OpportunityDetailsScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: _border),
       ),
@@ -73,29 +80,32 @@ class OpportunityDetailsScreen extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFFEFE7D4),
+              color: _gold.withOpacity(.12),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
               opportunity.role == OpportunityRole.teacher
                   ? Icons.menu_book
                   : Icons.badge,
-              color: _darkGreen,
+              color: _gold,
             ),
           ),
           const SizedBox(height: 10),
           Text(
             opportunity.roleLabel,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1E1B12),
+            style: GoogleFonts.amiri(
+              fontSize: 19,
+              fontWeight: FontWeight.w700,
+              color: _ivory,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             opportunity.organizationName,
-            style: const TextStyle(fontSize: 12, color: _muted),
+            style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                fontSize: 12,
+                color: _textMuted),
           ),
         ],
       ),
@@ -132,7 +142,7 @@ class OpportunityDetailsScreen extends StatelessWidget {
             (item) => Container(
               padding: const EdgeInsets.all(11),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: _surface,
                 borderRadius: BorderRadius.circular(12),
                 border: const Border(
                   right: BorderSide(color: _gold, width: 3),
@@ -143,10 +153,16 @@ class OpportunityDetailsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(item.$1,
-                      style: const TextStyle(fontSize: 10, color: _muted)),
+                      style: TextStyle(
+                          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                          fontSize: 10,
+                          color: _textMuted)),
                   const SizedBox(height: 4),
                   Text(item.$2,
-                      style: const TextStyle(fontSize: 12.5),
+                      style: TextStyle(
+                          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                          fontSize: 12.5,
+                          color: _ivory),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis),
                 ],
@@ -162,7 +178,7 @@ class OpportunityDetailsScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: _border),
       ),
@@ -170,13 +186,18 @@ class OpportunityDetailsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: const TextStyle(
+              style: TextStyle(
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E1B12))),
+                  color: _gold)),
           const SizedBox(height: 6),
           Text(content,
-              style: const TextStyle(fontSize: 12, color: _muted, height: 1.6)),
+              style: TextStyle(
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                  fontSize: 12,
+                  color: _textMuted,
+                  height: 1.6)),
         ],
       ),
     );
@@ -187,7 +208,7 @@ class OpportunityDetailsScreen extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          backgroundColor: _darkGreen,
+          backgroundColor: _gold,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -200,9 +221,13 @@ class OpportunityDetailsScreen extends StatelessWidget {
             ),
           );
         },
-        icon: const Icon(Icons.edit_note, color: _gold, size: 18),
-        label: const Text('سجل الآن',
-            style: TextStyle(color: _cream, fontSize: 14)),
+        icon: Icon(Icons.edit_note, color: _background, size: 18),
+        label: Text('سجل الآن',
+            style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _background,
+                fontSize: 14,
+                fontWeight: FontWeight.w700)),
       ),
     );
   }

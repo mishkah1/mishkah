@@ -7,20 +7,31 @@ import 'my_registrations_screen.dart';
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
 
+  // ── هوية مِشكاة ──
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _goldLight = Color(0xFFD8BC7A);
+  static const _sand = Color(0xFFC0A06A);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
+
   @override
   Widget build(BuildContext context) {
     final email = Supabase.instance.client.auth.currentUser?.email ?? '';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F5EF),
+      backgroundColor: _background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF24483A),
+        backgroundColor: _surface,
         elevation: 0,
         centerTitle: true,
         title: Text(
           'حسابي',
-          style: GoogleFonts.cairo(
-            color: const Color(0xFFFFF8EA),
+          style: GoogleFonts.amiri(
+            color: _ivory,
             fontSize: 20,
             fontWeight: FontWeight.w700,
           ),
@@ -35,10 +46,10 @@ class AccountScreen extends StatelessWidget {
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height * 0.25,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE8E1D3),
+                  color: _surfaceRaised,
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(
-                    color: const Color(0xFFE7E3D9),
+                    color: _border,
                   ),
                 ),
                 clipBehavior: Clip.antiAlias,
@@ -46,11 +57,11 @@ class AccountScreen extends StatelessWidget {
                   'assets/images/account.png',
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    return const Center(
+                    return Center(
                       child: Icon(
                         Icons.person_outline_rounded,
                         size: 70,
-                        color: Color(0xFF24483A),
+                        color: _gold,
                       ),
                     );
                   },
@@ -59,8 +70,8 @@ class AccountScreen extends StatelessWidget {
               const SizedBox(height: 22),
               Text(
                 'أهلاً بك',
-                style: GoogleFonts.cairo(
-                  color: const Color(0xFF24483A),
+                style: GoogleFonts.amiri(
+                  color: _ivory,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                 ),
@@ -69,8 +80,9 @@ class AccountScreen extends StatelessWidget {
               Text(
                 email,
                 textDirection: TextDirection.ltr,
-                style: GoogleFonts.cairo(
-                  color: const Color(0xFF77736B),
+                style: TextStyle(
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                  color: _textSecondary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -120,10 +132,17 @@ class _AccountOption extends StatelessWidget {
     required this.onTap,
   });
 
+  static const _surface = AccountScreen._surface;
+  static const _surfaceRaised = AccountScreen._surfaceRaised;
+  static const _border = AccountScreen._border;
+  static const _gold = AccountScreen._gold;
+  static const _ivory = AccountScreen._ivory;
+  static const _sand = AccountScreen._sand;
+
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: _surface,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: onTap,
@@ -135,21 +154,22 @@ class _AccountOption extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: const Color(0xFFE7E3D9),
+              color: _border,
             ),
           ),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.arrow_back_ios_new_rounded,
                 size: 17,
-                color: Color(0xFF9A7955),
+                color: _sand,
               ),
               const Spacer(),
               Text(
                 title,
-                style: GoogleFonts.cairo(
-                  color: const Color(0xFF24483A),
+                style: TextStyle(
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                  color: _ivory,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
@@ -159,12 +179,12 @@ class _AccountOption extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0EBDD),
+                  color: _surfaceRaised,
                   borderRadius: BorderRadius.circular(13),
                 ),
                 child: Icon(
                   icon,
-                  color: const Color(0xFF24483A),
+                  color: _gold,
                   size: 22,
                 ),
               ),

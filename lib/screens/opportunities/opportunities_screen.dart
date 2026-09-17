@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../models/opportunity_model.dart';
 import '../../repositories/opportunity_repository.dart';
 import 'opportunity_details_screen.dart';
@@ -12,10 +13,13 @@ class OpportunitiesScreen extends StatefulWidget {
 }
 
 class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
-  static const _darkGreen = Color(0xFF0F3D30);
-  static const _cream = Color(0xFFF7F3EA);
-  static const _gold = Color(0xFFD9A441);
-  static const _muted = Color(0xFF8A8470);
+  // ── هوية مِشكاة ──
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _gold = Color(0xFFC6A15B);
+  static const _goldLight = Color(0xFFD8BC7A);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textMuted = Color(0xFF7E8882);
 
   final OpportunityRepository repository = OpportunityRepository();
 
@@ -47,19 +51,20 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _cream,
+      backgroundColor: _background,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: _darkGreen,
+            backgroundColor: _surface,
             expandedHeight: 90,
             pinned: true,
             leading: IconButton(
               icon: const Icon(Icons.arrow_forward, color: _gold),
               onPressed: () => Navigator.pop(context),
             ),
-            title: const Text('الفرص',
-                style: TextStyle(color: _cream, fontSize: 16, fontWeight: FontWeight.w600)),
+            title: Text('الفرص',
+                style: GoogleFonts.amiri(
+                    color: _ivory, fontSize: 18, fontWeight: FontWeight.w700)),
             centerTitle: true,
           ),
           SliverPadding(
@@ -76,18 +81,21 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       return const SliverToBoxAdapter(
         child: Padding(
           padding: EdgeInsets.only(top: 60),
-          child: Center(child: CircularProgressIndicator(color: _darkGreen)),
+          child: Center(child: CircularProgressIndicator(color: _gold)),
         ),
       );
     }
 
     if (opportunities.isEmpty) {
-      return const SliverToBoxAdapter(
+      return SliverToBoxAdapter(
         child: Padding(
-          padding: EdgeInsets.only(top: 60),
+          padding: const EdgeInsets.only(top: 60),
           child: Center(
             child: Text('ما فيه فرص متاحة حاليا',
-                style: TextStyle(fontSize: 13, color: _muted)),
+                style: TextStyle(
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                    fontSize: 13,
+                    color: _textMuted)),
           ),
         ),
       );
@@ -114,11 +122,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: _surface,
           borderRadius: BorderRadius.circular(14),
           border: Border(
             right: BorderSide(
-              color: opp.role == OpportunityRole.teacher ? _gold : _darkGreen,
+              color: opp.role == OpportunityRole.teacher ? _gold : _goldLight,
               width: 3,
             ),
           ),
@@ -132,7 +140,11 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 Expanded(
                   child: Text(
                     '${opp.roleLabel} - ${opp.organizationName}',
-                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w500,
+                        color: _ivory),
                   ),
                 ),
                 _buildLocationBadge(opp),
@@ -144,12 +156,15 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 Icon(
                   opp.isInPerson ? Icons.location_on : Icons.wifi,
                   size: 13,
-                  color: _muted,
+                  color: _textMuted,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   opp.isInPerson ? opp.district : 'أونلاين',
-                  style: const TextStyle(fontSize: 11.5, color: _muted),
+                  style: TextStyle(
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                      fontSize: 11.5,
+                      color: _textMuted),
                 ),
               ],
             ),
@@ -158,9 +173,16 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(opp.salary,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF1E1B12))),
+                    style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: _goldLight)),
                 Text(opp.ageRangeLabel,
-                    style: const TextStyle(fontSize: 11, color: _muted)),
+                    style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                        fontSize: 11,
+                        color: _textMuted)),
               ],
             ),
           ],
@@ -173,14 +195,18 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
       decoration: BoxDecoration(
-        color: opp.isInPerson ? const Color(0xFFEAF3DE) : const Color(0xFFEAF1F7),
+        color: opp.isInPerson ? _gold.withOpacity(.14) : Colors.white.withOpacity(.08),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: opp.isInPerson ? _gold.withOpacity(.30) : Colors.white.withOpacity(.14),
+        ),
       ),
       child: Text(
         opp.isInPerson ? 'حضوري' : 'أونلاين',
         style: TextStyle(
+          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
           fontSize: 10,
-          color: opp.isInPerson ? const Color(0xFF2D4A16) : const Color(0xFF1E4A6B),
+          color: opp.isInPerson ? _goldLight : _ivory,
         ),
       ),
     );

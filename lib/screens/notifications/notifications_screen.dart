@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mishkah/services/local_saved_service.dart';
 import 'package:mishkah/screens/halaqa/halaqa_details_screen.dart';
 
@@ -11,6 +12,13 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   final LocalSavedService savedService = LocalSavedService.instance;
+
+  // ── هوية مِشكاة ──
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
 
   @override
   void initState() {
@@ -35,23 +43,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final notifications = savedService.notifications;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F5EF),
+      backgroundColor: _background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF24483A),
+        backgroundColor: _surface,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_forward,
-            color: Color(0xFFFFF8EA),
+            color: _ivory,
           ),
         ),
-        title: const Text(
+        title: Text(
           'الإشعارات',
-          style: TextStyle(
-            color: Color(0xFFFFF8EA),
-            fontSize: 16,
+          style: GoogleFonts.amiri(
+            color: _ivory,
+            fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -89,6 +97,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 }
 
 class _EmptyNotifications extends StatelessWidget {
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -100,32 +113,33 @@ class _EmptyNotifications extends StatelessWidget {
             Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
-                color: Color(0xFFE8EEE9),
+              decoration: BoxDecoration(
+                color: _surfaceRaised,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.notifications_none_rounded,
                 size: 34,
-                color: Color(0xFF24483A),
+                color: _gold,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'لا توجد إشعارات',
-              style: TextStyle(
-                fontSize: 17,
+              style: GoogleFonts.amiri(
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF24483A),
+                color: _ivory,
               ),
             ),
             const SizedBox(height: 7),
-            const Text(
+            Text(
               'عند تفعيل التنبيه لأي برنامج سيظهر هنا',
               textAlign: TextAlign.center,
               style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                 fontSize: 12,
-                color: Color(0xFF777777),
+                color: _textSecondary,
               ),
             ),
           ],
@@ -146,6 +160,14 @@ class _NotificationCard extends StatelessWidget {
     required this.onRemove,
   });
 
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _goldLight = Color(0xFFD8BC7A);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -153,10 +175,10 @@ class _NotificationCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: _surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: const Color(0xFFE7E3D9),
+            color: _border,
           ),
         ),
         padding: const EdgeInsets.all(13),
@@ -195,10 +217,11 @@ class _NotificationCard extends StatelessWidget {
                       item.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF24483A),
+                        color: _ivory,
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -206,26 +229,28 @@ class _NotificationCard extends StatelessWidget {
                       item.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                         fontSize: 11,
-                        color: Color(0xFF777777),
+                        color: _textSecondary,
                         height: 1.4,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.notifications_active_rounded,
                           size: 14,
-                          color: Color(0xFF9A7955),
+                          color: _gold,
                         ),
                         const SizedBox(width: 4),
-                        const Text(
+                        Text(
                           'التنبيه مفعّل',
                           style: TextStyle(
+                            fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                             fontSize: 10,
-                            color: Color(0xFF9A7955),
+                            color: _gold,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -236,9 +261,9 @@ class _NotificationCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onRemove,
-                icon: const Icon(
+                icon: Icon(
                   Icons.notifications_active_rounded,
-                  color: Color(0xFF24483A),
+                  color: _goldLight,
                   size: 21,
                 ),
                 tooltip: 'إلغاء التنبيه',
@@ -252,11 +277,11 @@ class _NotificationCard extends StatelessWidget {
 
   Widget _imagePlaceholder() {
     return Container(
-      color: const Color(0xFFE8E4D9),
-      child: const Center(
+      color: _surfaceRaised,
+      child: Center(
         child: Icon(
           Icons.menu_book_outlined,
-          color: Color(0xFF24483A),
+          color: _gold,
           size: 28,
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../models/opportunity_model.dart';
 
 /// صفحة التسجيل بفرصة عمل أو تطوع: تطلب الاسم الكامل، العمر، ورقم الجوال.
@@ -14,11 +15,14 @@ class OpportunityRegistrationScreen extends StatefulWidget {
 
 class _OpportunityRegistrationScreenState
     extends State<OpportunityRegistrationScreen> {
-  static const _darkGreen = Color(0xFF0F3D30);
-  static const _cream = Color(0xFFF7F3EA);
-  static const _gold = Color(0xFFD9A441);
-  static const _muted = Color(0xFF8A8470);
-  static const _border = Color(0xFFE7DFC9);
+  // ── هوية مِشكاة ──
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textMuted = Color(0xFF7E8882);
 
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -36,16 +40,19 @@ class _OpportunityRegistrationScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _cream,
+      backgroundColor: _background,
       appBar: AppBar(
-        backgroundColor: _darkGreen,
+        backgroundColor: _surface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_forward, color: _gold),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('التسجيل بالفرصة',
-            style: TextStyle(color: _cream, fontSize: 14)),
+        title: Text('التسجيل بالفرصة',
+            style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _ivory,
+                fontSize: 14)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -57,16 +64,19 @@ class _OpportunityRegistrationScreenState
             children: [
               Text(
                 '${widget.opportunity.roleLabel} - ${widget.opportunity.organizationName}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E1B12),
+                style: GoogleFonts.amiri(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: _ivory,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'عبّي بياناتك عشان نكمّل تقديمك على الفرصة',
-                style: TextStyle(fontSize: 12, color: _muted),
+                style: TextStyle(
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                    fontSize: 12,
+                    color: _textMuted),
               ),
               const SizedBox(height: 24),
 
@@ -120,14 +130,18 @@ class _OpportunityRegistrationScreenState
 
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _darkGreen,
+                  backgroundColor: _gold,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: _submit,
-                child: const Text('تسجيل',
-                    style: TextStyle(color: _cream, fontSize: 15)),
+                child: Text('تسجيل',
+                    style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                        color: _background,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -141,9 +155,10 @@ class _OpportunityRegistrationScreenState
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
+          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
           fontSize: 12.5,
-          color: Color(0xFF1E1B12),
+          color: _ivory,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -165,18 +180,26 @@ class _OpportunityRegistrationScreenState
       controller: controller,
       keyboardType: keyboardType,
       textAlign: TextAlign.right,
+      style: TextStyle(
+        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+        color: _ivory,
+      ),
       validator: validator,
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: TextStyle(
+          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+          color: _textMuted,
+        ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: _surfaceRaised,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: border,
         enabledBorder: border,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: _darkGreen, width: 1.4),
+          borderSide: const BorderSide(color: _gold, width: 1.4),
         ),
       ),
     );
@@ -196,7 +219,7 @@ class _OpportunityRegistrationScreenState
       barrierDismissible: false,
       builder: (dialogContext) {
         return Dialog(
-          backgroundColor: Colors.white,
+          backgroundColor: _surface,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
@@ -207,34 +230,37 @@ class _OpportunityRegistrationScreenState
                 Container(
                   width: 64,
                   height: 64,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFEAF3DE),
+                  decoration: BoxDecoration(
+                    color: _gold.withOpacity(.14),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check,
-                      color: Color(0xFF2D4A16), size: 36),
+                  child: Icon(Icons.check,
+                      color: _gold, size: 36),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'تم التسجيل بنجاح',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF1E1B12),
+                  style: GoogleFonts.amiri(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: _ivory,
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   'راح يتواصلون معك قريبًا بخصوص الفرصة',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: _muted),
+                  style: TextStyle(
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                      fontSize: 12,
+                      color: _textMuted),
                 ),
                 const SizedBox(height: 22),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _darkGreen,
+                      backgroundColor: _gold,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -243,8 +269,12 @@ class _OpportunityRegistrationScreenState
                       Navigator.pop(dialogContext); // يقفل مربع النجاح
                       Navigator.pop(context); // يرجع لصفحة تفاصيل الفرصة
                     },
-                    child: const Text('العودة',
-                        style: TextStyle(color: _cream, fontSize: 14)),
+                    child: Text('العودة',
+                        style: TextStyle(
+                            fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                            color: _background,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700)),
                   ),
                 ),
               ],
