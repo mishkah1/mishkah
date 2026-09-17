@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mishkah/screens/home/home_screen.dart';
 import 'package:mishkah/screens/signup_screen.dart';
 import 'package:mishkah/services/auth_service.dart';
@@ -14,12 +15,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
-  static const _background = Color(0xFF071C16);
-  static const _backgroundMid = Color(0xFF0B2920);
-
-  static const _accent = Color(0xFFC8B88A);
-  static const _cream = Color(0xFFF4F1E8);
-  static const _muted = Color(0xFFB5C2BB);
+  // ألوان الهوية (لا تتغيّر عن بقية التطبيق)
+  static const _bg = Color(0xFF0D1713);
+  static const _surface1 = Color(0xFF15221C);
+  static const _surface2 = Color(0xFF1B2B24);
+  static const _gold = Color(0xFFC6A15B);
+  static const _goldLight = Color(0xFFD8BC7A);
+  static const _goldDark = Color(0xFFA9834A);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _muted = Color(0xFFAEB8AF);
 
   final AuthService authService = AuthService();
   final emailController = TextEditingController();
@@ -29,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool isLoading = false;
 
   late final AnimationController _entry;
+  late final AnimationController _ambient;
 
   @override
   void initState() {
@@ -36,8 +41,13 @@ class _LoginScreenState extends State<LoginScreen>
 
     _entry = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1500),
     )..forward();
+
+    _ambient = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3400),
+    )..repeat(reverse: true);
   }
 
   @override
@@ -45,15 +55,14 @@ class _LoginScreenState extends State<LoginScreen>
     emailController.dispose();
     passwordController.dispose();
     _entry.dispose();
+    _ambient.dispose();
     super.dispose();
   }
 
-  double _progress(double start, double end) {
-    final value = (_entry.value - start) / (end - start);
-
-    return Curves.easeOutCubic.transform(
-      value.clamp(0.0, 1.0),
-    );
+  // يحاكي الـ keyframes النسبية (from -> to) على مدى المتحكم الكامل
+  double _seg(double start, double end, {Curve curve = Curves.linear}) {
+    final v = ((_entry.value - start) / (end - start)).clamp(0.0, 1.0);
+    return curve.transform(v);
   }
 
   Future<void> login() async {
@@ -78,10 +87,7 @@ class _LoginScreenState extends State<LoginScreen>
     setState(() => isLoading = true);
 
     try {
-      await authService.signIn(
-        email: email,
-        password: password,
-      );
+      await authService.signIn(email: email, password: password);
 
       if (!mounted) return;
 
@@ -89,19 +95,15 @@ class _LoginScreenState extends State<LoginScreen>
 
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (_) => const HomeScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
         (route) => false,
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-
       setState(() => isLoading = false);
       _showMessage(_getAuthError(e.message));
     } catch (e) {
       if (!mounted) return;
-
       setState(() => isLoading = false);
       _showMessage('حدث خطأ، حاول مرة أخرى');
     }
@@ -110,14 +112,12 @@ class _LoginScreenState extends State<LoginScreen>
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: const Color(0xFF183F32),
+        backgroundColor: _surface2,
         content: Text(
           message,
           textDirection: TextDirection.rtl,
           textAlign: TextAlign.right,
-          style: const TextStyle(
-            color: _cream,
-          ),
+          style: const TextStyle(color: _ivory),
         ),
       ),
     );
@@ -129,15 +129,12 @@ class _LoginScreenState extends State<LoginScreen>
     if (text.contains('invalid login credentials')) {
       return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
     }
-
     if (text.contains('email not confirmed')) {
       return 'البريد الإلكتروني غير موثق، يرجى التحقق من بريدك أولًا';
     }
-
     if (text.contains('email')) {
       return 'تأكد من صحة البريد الإلكتروني';
     }
-
     return 'تعذر تسجيل الدخول، حاول مرة أخرى';
   }
 
@@ -148,41 +145,24 @@ class _LoginScreenState extends State<LoginScreen>
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(
-        color: _muted.withValues(alpha: 0.75),
-        fontSize: 13,
-      ),
-      prefixIcon: Icon(
-        icon,
-        color: _accent.withValues(alpha: 0.75),
-        size: 19,
-      ),
+      hintStyle: TextStyle(color: _muted.withValues(alpha: 0.7), fontSize: 13),
+      prefixIcon: Icon(icon, color: _gold.withValues(alpha: 0.8), size: 19),
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white.withValues(alpha: 0.045),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(17),
-        borderSide: BorderSide(
-          color: Colors.white.withValues(alpha: 0.10),
-        ),
+        borderSide: BorderSide(color: _gold.withValues(alpha: 0.18)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(17),
-        borderSide: BorderSide(
-          color: Colors.white.withValues(alpha: 0.10),
-        ),
+        borderSide: BorderSide(color: _gold.withValues(alpha: 0.18)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(17),
-        borderSide: BorderSide(
-          color: _accent.withValues(alpha: 0.65),
-          width: 1.2,
-        ),
+        borderSide: BorderSide(color: _goldLight, width: 1.3),
       ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 17,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 17),
     );
   }
 
@@ -191,15 +171,11 @@ class _LoginScreenState extends State<LoginScreen>
     required double end,
     required Widget child,
   }) {
-    final value = _progress(start, end);
-
+    final v = _seg(start, end, curve: Curves.easeOutCubic);
     return Opacity(
-      opacity: value,
+      opacity: v,
       child: Transform.translate(
-        offset: Offset(
-          0,
-          (1 - value) * 18,
-        ),
+        offset: Offset(0, (1 - v) * 16),
         child: child,
       ),
     );
@@ -207,278 +183,429 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    final screenH = MediaQuery.of(context).size.height;
-
-    final imageProgress = Curves.easeOutBack.transform(
-      _entry.value.clamp(0.0, 1.0),
-    );
-
-    final imageHeight = screenH * 0.36;
-
-    final imageTop = lerpDouble(
-      -screenH * 0.38,
-      0,
-      imageProgress,
-    )!;
+    final size = MediaQuery.of(context).size;
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: _background,
+        backgroundColor: _bg,
         body: AnimatedBuilder(
-          animation: _entry,
+          animation: Listenable.merge([_entry, _ambient]),
           builder: (context, _) {
+            // مراحل "انفجار الضوء" السينمائي
+            final flashOpacity = _seg(0.0, 0.10, curve: Curves.easeOut) *
+                (1 - _seg(0.10, 0.34, curve: Curves.easeIn));
+            final ringT = _seg(0.02, 0.40, curve: Curves.easeOut);
+            final ringScale = lerpDouble(0.15, 3.4, ringT)!;
+            final ringOpacity = (1 - ringT) * 0.9;
+            final burstT = _seg(0.0, 0.34, curve: Curves.easeOut);
+            final burstScale = lerpDouble(0.08, 2.6, burstT)!;
+            final burstOpacity = (1 - _seg(0.10, 0.34)) *
+                _seg(0.0, 0.08, curve: Curves.easeOut);
+
+            final contentT = _seg(0.16, 0.55, curve: Curves.easeOutCubic);
+            final contentBlur = lerpDouble(16, 0, contentT)!;
+            final contentScale = lerpDouble(0.94, 1, contentT)!;
+
+            final ambient = Curves.easeInOut.transform(_ambient.value);
+
             return Stack(
               children: [
                 Positioned.fill(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          _backgroundMid,
-                          _background,
-                        ],
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(0, -0.7),
+                        radius: 1.1,
+                        colors: [_surface2, _surface1, _bg],
+                        stops: const [0.0, 0.45, 1.0],
                       ),
                     ),
                   ),
                 ),
 
-                SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: imageHeight + 45,
-                      bottom: 30,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 25,
-                      ),
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.stretch,
-                        children: [
-                          _reveal(
-                            start: 0.35,
-                            end: 0.56,
-                            child: const Text(
-                              'تسجيل الدخول',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: _cream,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w900,
-                                height: 1.15,
-                              ),
-                            ),
+                // توهج ذهبي عائم خافت
+                Positioned(
+                  top: -60,
+                  right: -70,
+                  child: _glowBlob(220, 0.16 * (0.6 + 0.4 * ambient)),
+                ),
+                Positioned(
+                  bottom: 60,
+                  left: -90,
+                  child: _glowBlob(260, 0.10 * (0.6 + 0.4 * (1 - ambient))),
+                ),
+
+                // محتوى الشاشة
+                ImageFiltered(
+                  imageFilter:
+                      ImageFilter.blur(sigmaX: contentBlur, sigmaY: contentBlur),
+                  child: Opacity(
+                    opacity: contentT,
+                    child: Transform.scale(
+                      scale: contentScale,
+                      child: SafeArea(
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 26,
+                            vertical: 10,
                           ),
-
-                          const SizedBox(height: 7),
-
-                          _reveal(
-                            start: 0.40,
-                            end: 0.62,
-                            child: const Text(
-                              'سجّل دخولك وتابع رحلتك مع مِشكاة',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: _muted,
-                                fontSize: 13,
-                                height: 1.5,
-                              ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: size.height -
+                                  MediaQuery.of(context).padding.top -
+                                  MediaQuery.of(context).padding.bottom -
+                                  20,
                             ),
-                          ),
-
-                          const SizedBox(height: 23),
-
-                          _reveal(
-                            start: 0.46,
-                            end: 0.68,
-                            child: TextField(
-                              controller: emailController,
-                              keyboardType:
-                                  TextInputType.emailAddress,
-                              textDirection: TextDirection.ltr,
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(
-                                color: _cream,
-                              ),
-                              decoration: _fieldDecoration(
-                                hint: 'البريد الإلكتروني',
-                                icon: Icons.email_outlined,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          _reveal(
-                            start: 0.52,
-                            end: 0.74,
-                            child: TextField(
-                              controller: passwordController,
-                              obscureText: obscurePassword,
-                              textDirection: TextDirection.ltr,
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(
-                                color: _cream,
-                              ),
-                              decoration: _fieldDecoration(
-                                hint: 'كلمة المرور',
-                                icon: Icons.lock_outline_rounded,
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      obscurePassword =
-                                          !obscurePassword;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    obscurePassword
-                                        ? Icons.visibility_off_outlined
-                                        : Icons.visibility_outlined,
-                                    color: _accent.withValues(
-                                      alpha: 0.80,
-                                    ),
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          _reveal(
-                            start: 0.58,
-                            end: 0.78,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: isLoading ? null : () {},
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: const Text(
-                                  'نسيت كلمة المرور؟',
-                                  style: TextStyle(
-                                    color: _accent,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 15),
-
-                          _reveal(
-                            start: 0.63,
-                            end: 0.83,
-                            child: SizedBox(
-                              height: 52,
-                              child: ElevatedButton(
-                                onPressed: isLoading ? null : login,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: _accent,
-                                  disabledBackgroundColor:
-                                      _accent.withValues(alpha: 0.45),
-                                  elevation: 4,
-                                  shadowColor:
-                                      Colors.black.withValues(alpha: 0.20),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(17),
-                                  ),
-                                ),
-                                child: isLoading
-                                    ? const SizedBox(
-                                        width: 21,
-                                        height: 21,
-                                        child:
-                                            CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: _background,
-                                        ),
-                                      )
-                                    : const Text(
-                                        'تسجيل الدخول',
-                                        style: TextStyle(
-                                          color: _background,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 14),
-
-                          _reveal(
-                            start: 0.69,
-                            end: 0.91,
-                            child: Row(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text(
-                                  'ليس لديك حساب؟',
-                                  style: TextStyle(
-                                    color: _muted,
-                                    fontSize: 12,
+                                // القنديل + الاسم كوحدة بصرية واحدة
+                                _reveal(
+                                  start: 0.30,
+                                  end: 0.48,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 150,
+                                        child: Stack(
+                                          alignment: Alignment.bottomCenter,
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Positioned(
+                                              bottom: 20,
+                                              child: _glowBlob(
+                                                170,
+                                                0.24 * (0.7 + 0.3 * ambient),
+                                              ),
+                                            ),
+                                            Image.asset(
+                                              'assets/images/lantern.png',
+                                              width: 56,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'مِشكاة',
+                                        style: GoogleFonts.elMessiri(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w500,
+                                          color: _ivory,
+                                          shadows: [
+                                            Shadow(
+                                              color: _gold.withValues(
+                                                alpha: 0.35,
+                                              ),
+                                              blurRadius: 22,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Container(
+                                        width: 64,
+                                        height: 2,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(2),
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.transparent,
+                                              _gold,
+                                              Colors.transparent,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: isLoading
-                                      ? null
-                                      : () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  const SignupScreen(),
+
+                                const SizedBox(height: 18),
+
+                                // بطاقة زجاجية
+                                _reveal(
+                                  start: 0.40,
+                                  end: 0.58,
+                                  child: Container(
+                                    width: 296,
+                                    padding: const EdgeInsets.fromLTRB(
+                                      22,
+                                      26,
+                                      22,
+                                      24,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(22),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.white.withValues(alpha: 0.06),
+                                          Colors.white.withValues(alpha: 0.02),
+                                        ],
+                                      ),
+                                      border: Border.all(
+                                        color: _gold.withValues(alpha: 0.28),
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: _gold.withValues(alpha: 0.16),
+                                          blurRadius: 40,
+                                        ),
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.5,
+                                          ),
+                                          blurRadius: 48,
+                                          offset: const Offset(0, 24),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        Text(
+                                          'تسجيل الدخول',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: _ivory,
+                                            fontSize: 23,
+                                            fontWeight: FontWeight.w900,
+                                            height: 1.15,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 7),
+                                        Text(
+                                          'سجّل دخولك وتابع رحلتك مع مِشكاة',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: _muted,
+                                            fontSize: 12.5,
+                                            height: 1.6,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 22),
+
+                                        _reveal(
+                                          start: 0.50,
+                                          end: 0.66,
+                                          child: TextField(
+                                            controller: emailController,
+                                            keyboardType:
+                                                TextInputType.emailAddress,
+                                            textDirection: TextDirection.ltr,
+                                            textAlign: TextAlign.right,
+                                            style:
+                                                const TextStyle(color: _ivory),
+                                            decoration: _fieldDecoration(
+                                              hint: 'البريد الإلكتروني',
+                                              icon: Icons.email_outlined,
                                             ),
-                                          );
-                                        },
-                                  child: const Text(
-                                    'إنشاء حساب',
-                                    style: TextStyle(
-                                      color: _accent,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 12),
+
+                                        _reveal(
+                                          start: 0.55,
+                                          end: 0.71,
+                                          child: TextField(
+                                            controller: passwordController,
+                                            obscureText: obscurePassword,
+                                            textDirection: TextDirection.ltr,
+                                            textAlign: TextAlign.right,
+                                            style:
+                                                const TextStyle(color: _ivory),
+                                            decoration: _fieldDecoration(
+                                              hint: 'كلمة المرور',
+                                              icon: Icons.lock_outline_rounded,
+                                              suffixIcon: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    obscurePassword =
+                                                        !obscurePassword;
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  obscurePassword
+                                                      ? Icons
+                                                          .visibility_off_outlined
+                                                      : Icons
+                                                          .visibility_outlined,
+                                                  color: _gold.withValues(
+                                                    alpha: 0.85,
+                                                  ),
+                                                  size: 20,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 8),
+
+                                        _reveal(
+                                          start: 0.60,
+                                          end: 0.75,
+                                          child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: TextButton(
+                                              onPressed:
+                                                  isLoading ? null : () {},
+                                              style: TextButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                minimumSize: Size.zero,
+                                                tapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap,
+                                              ),
+                                              child: Text(
+                                                'نسيت كلمة المرور؟',
+                                                style: TextStyle(
+                                                  color: _goldLight,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 16),
+
+                                        _reveal(
+                                          start: 0.65,
+                                          end: 0.82,
+                                          child: _GradientButton(
+                                            isLoading: isLoading,
+                                            onPressed: login,
+                                            label: 'تسجيل الدخول',
+                                            colors: const [
+                                              _goldLight,
+                                              _gold,
+                                              _goldDark,
+                                            ],
+                                            textColor: _bg,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 14),
+
+                                        _reveal(
+                                          start: 0.72,
+                                          end: 0.92,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'ليس لديك حساب؟',
+                                                style: TextStyle(
+                                                  color: _muted,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: isLoading
+                                                    ? null
+                                                    : () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                const SignupScreen(),
+                                                          ),
+                                                        );
+                                                      },
+                                                child: Text(
+                                                  'إنشاء حساب',
+                                                  style: TextStyle(
+                                                    color: _goldLight,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w800,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
                 ),
 
-                Positioned(
-                  top: imageTop,
-                  left: 0,
-                  right: 0,
-                  child: SizedBox(
-                    height: imageHeight,
-                    child: ClipPath(
-                      clipper: _ImageHeaderClipper(),
-                      child: Image.asset(
-                        'assets/images/background.png',
-                        width: double.infinity,
-                        height: imageHeight,
-                        fit: BoxFit.cover,
+                // دخول سينمائي: ومضة بيضاء ثم حلقة صدمة وانفجار ضوء ذهبي
+                IgnorePointer(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Opacity(
+                          opacity: flashOpacity.clamp(0.0, 1.0),
+                          child: Container(color: const Color(0xFFFFF9EC)),
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        top: size.height * 0.46 - 50,
+                        left: size.width / 2 - 50,
+                        child: Opacity(
+                          opacity: ringOpacity.clamp(0.0, 1.0),
+                          child: Transform.scale(
+                            scale: ringScale,
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: _goldLight,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: size.height * 0.46 - 170,
+                        left: size.width / 2 - 170,
+                        child: Opacity(
+                          opacity: burstOpacity.clamp(0.0, 1.0),
+                          child: Transform.scale(
+                            scale: burstScale,
+                            child: Container(
+                              width: 340,
+                              height: 340,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    Color(0xFFFFF7E4),
+                                    _goldLight,
+                                    _gold,
+                                    Colors.transparent,
+                                  ],
+                                  stops: [0.0, 0.22, 0.42, 0.72],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -488,44 +615,83 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
-}
 
-class _ImageHeaderClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-
-    path.moveTo(0, 0);
-    path.lineTo(size.width, 0);
-    path.lineTo(size.width, size.height * 0.60);
-
-    path.cubicTo(
-      size.width * 0.82,
-      size.height * 0.74,
-      size.width * 0.66,
-      size.height * 0.90,
-      size.width * 0.48,
-      size.height * 0.76,
+  Widget _glowBlob(double size, double alpha) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            _goldLight.withValues(alpha: alpha.clamp(0.0, 1.0)),
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.7],
+        ),
+      ),
     );
-
-    path.cubicTo(
-      size.width * 0.30,
-      size.height * 0.62,
-      size.width * 0.14,
-      size.height * 0.82,
-      0,
-      size.height * 0.68,
-    );
-
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(
-    covariant CustomClipper<Path> oldClipper,
-  ) {
-    return false;
   }
 }
+
+class _GradientButton extends StatelessWidget {
+  const _GradientButton({
+    required this.isLoading,
+    required this.onPressed,
+    required this.label,
+    required this.colors,
+    required this.textColor,
+  });
+
+  final bool isLoading;
+  final VoidCallback onPressed;
+  final String label;
+  final List<Color> colors;
+  final Color textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 52,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(17),
+          gradient: LinearGradient(colors: colors),
+          boxShadow: [
+            BoxShadow(
+              color: colors.last.withValues(alpha: 0.45),
+              blurRadius: 22,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(17),
+            onTap: isLoading ? null : onPressed,
+            child: Center(
+              child: isLoading
+                  ? SizedBox(
+                      width: 21,
+                      height: 21,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: textColor,
+                      ),
+                    )
+                  : Text(
+                      label,
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+} 
