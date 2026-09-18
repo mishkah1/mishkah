@@ -17,7 +17,6 @@ class FilterScreen extends StatefulWidget {
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  // ── هوية مِشكاة: نفس ألوان الشاشة الرئيسية ──
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _surfaceRaised = Color(0xFF1B2B24);
@@ -31,6 +30,14 @@ class _FilterScreenState extends State<FilterScreen> {
   static const _selectedBg = Color(0xFF23201A);
   static const _headerGradientStart = Color(0xFF101916);
   static const _headerGradientEnd = Color(0xFF263D32);
+
+  static const List<String> _pagesOrder = [
+    'نصف وجه',
+    'وجه واحد',
+    'وجهين',
+    'ثلاث أوجه',
+    'أربع أوجه',
+  ];
 
   AttendanceType? selectedAttendance;
   HalaqaTime? selectedTime;
@@ -46,6 +53,10 @@ class _FilterScreenState extends State<FilterScreen> {
   bool daycare = false;
 
   bool get isReview => widget.category == 'المراجعة';
+
+  bool get isMemorization => widget.category == 'الحفظ';
+
+  bool get showPagesFilter => isReview || isMemorization;
 
   bool get hasAnyFilter {
     return selectedAttendance != null ||
@@ -104,6 +115,19 @@ class _FilterScreenState extends State<FilterScreen> {
         .where((value) => value.isNotEmpty)
         .toSet()
         .toList();
+
+    values.sort((a, b) {
+      final indexA = _pagesOrder.indexOf(a);
+      final indexB = _pagesOrder.indexOf(b);
+      final rankA = indexA == -1 ? _pagesOrder.length : indexA;
+      final rankB = indexB == -1 ? _pagesOrder.length : indexB;
+
+      if (rankA != rankB) {
+        return rankA.compareTo(rankB);
+      }
+
+      return a.compareTo(b);
+    });
 
     return values;
   }
@@ -593,15 +617,17 @@ class _FilterScreenState extends State<FilterScreen> {
                         ),
                       ],
 
-                      if (isReview) ...[
+                      if (showPagesFilter) ...[
                         const SizedBox(height: 14),
                         _buildSection(
                           icon: Icons.menu_book_rounded,
-                          title: 'نصاب المراجعة',
-                          subtitle: 'اختاري النصاب المناسب لك',
+                          title: 'عدد الأوجه',
+                          subtitle: isReview
+                              ? 'كم وجه تودين مراجعته؟'
+                              : 'كم وجه تودين حفظه؟',
                           child: nisabValues.isEmpty
                               ? _buildEmptyOption(
-                                  'لا توجد خيارات للنصاب حاليًا',
+                                  'لا توجد خيارات متاحة حاليًا',
                                 )
                               : _buildChips(
                                   nisabValues.map((nisab) {
@@ -657,8 +683,8 @@ class _FilterScreenState extends State<FilterScreen> {
           Row(
             children: [
               _buildHeaderIcon(
-                Icons.arrow_forward_rounded,
-                () => Navigator.pop(context),
+                Icons.refresh_rounded,
+                resetFilters,
               ),
               const Spacer(),
               Text(
@@ -672,8 +698,8 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
               const Spacer(),
               _buildHeaderIcon(
-                Icons.refresh_rounded,
-                resetFilters,
+                Icons.arrow_forward_rounded,
+                () => Navigator.pop(context),
               ),
             ],
           ),

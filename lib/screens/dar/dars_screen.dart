@@ -213,12 +213,14 @@ class _DarsScreenState extends State<DarsScreen> {
   }
 
   DarModel? getDarById(String? darId) {
-    if (darId == null || darId.isEmpty) {
+    if (darId == null || darId.trim().isEmpty) {
       return null;
     }
 
+    final normalized = darId.trim();
+
     for (final dar in dars) {
-      if (dar.id == darId) {
+      if (dar.id.trim() == normalized) {
         return dar;
       }
     }
@@ -276,30 +278,39 @@ class _DarsScreenState extends State<DarsScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: _background,
-        appBar: AppBar(
-          backgroundColor: _background,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Text(
-            widget.category,
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.center,
-            style: _displayFont(
-              size: 22,
-              weight: FontWeight.w700,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: AppBar(
+              backgroundColor: _background,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              automaticallyImplyLeading: false,
+              leadingWidth: 56,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: _CircleIconButton(
+                  icon: Icons.arrow_back_ios_new_rounded,
+                  onTap: () => Navigator.pop(context),
+                ),
+              ),
+              title: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text(
+                  widget.category,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.center,
+                  style: _displayFont(
+                    size: 22,
+                    weight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              centerTitle: true,
             ),
           ),
-          centerTitle: true,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10, top: 8, bottom: 8),
-              child: _CircleIconButton(
-                icon: Icons.arrow_back_ios_new_rounded,
-                onTap: () => Navigator.pop(context),
-              ),
-            ),
-          ],
         ),
         body: Stack(
           children: [
@@ -633,9 +644,9 @@ class _CircleIconButton extends StatelessWidget {
               width: 0.8,
             ),
           ),
-          child: const Icon(
-            Icons.arrow_forward_ios_rounded,
-            color: Color(0xFFF4EFE3),
+          child: Icon(
+            icon,
+            color: const Color(0xFFF4EFE3),
             size: 16,
           ),
         ),
@@ -816,44 +827,49 @@ class _HalaqaCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            textDirection: TextDirection.rtl,
-            children: [
-              Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: _gold,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 7),
-              Expanded(
-                child: Text(
-                  dar?.name ?? 'دار غير محددة',
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
-                  style: GoogleFonts.ibmPlexSansArabic(
-                    fontSize: 11,
-                    color: _muted,
-                    fontWeight: FontWeight.w500,
+          if (!isOnline) ...[
+            Row(
+              textDirection: TextDirection.rtl,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: _gold,
+                    shape: BoxShape.circle,
                   ),
                 ),
+                const SizedBox(width: 7),
+                Expanded(
+                  child: Text(
+                    dar?.name ?? 'دار غير محددة',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    style: GoogleFonts.ibmPlexSansArabic(
+                      fontSize: 11,
+                      color: _muted,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+          ],
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              halaqa.name,
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.right,
+              style: GoogleFonts.amiri(
+                fontSize: 21,
+                fontWeight: FontWeight.w700,
+                color: _cream,
+                height: 1.2,
               ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          Text(
-            halaqa.name,
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-            style: GoogleFonts.amiri(
-              fontSize: 21,
-              fontWeight: FontWeight.w700,
-              color: _cream,
-              height: 1.2,
             ),
           ),
           const SizedBox(height: 14),

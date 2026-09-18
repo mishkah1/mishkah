@@ -23,7 +23,7 @@ class DonationScreen extends StatelessWidget {
 
   static const _bannerImage = 'assets/images/donation_banner.jpg';
 
-  static const _donationLink = 'https://store.maknon.org.sa/aedgqg?srsltid=AU7gw4Xec9KAubGrJiRHPuRY_bqGVIsytHQFqSxqxWRFc5WF9c_gS8G1';
+  static const _donationLink = 'https://maknon.org.sa/';
 
   static const _verseSource = 'سورة البقرة - آية 245';
 
@@ -57,23 +57,36 @@ class DonationScreen extends StatelessWidget {
   Future<void> _openDonationLink(BuildContext context) async {
     final uri = Uri.parse(_donationLink);
 
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(
+    // نحاول الفتح مباشرة بدل الاعتماد على canLaunchUrl، لأنها ترجع false
+    // بشكل خاطئ على أندرويد 11+ إذا ما كان AndroidManifest.xml مُعدًا
+    // بالسماحية اللازمة (queries) حتى لو الرابط شغّال فعليًا.
+    try {
+      final launched = await launchUrl(
         uri,
         mode: LaunchMode.externalApplication,
       );
-    } else if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: _surfaceElevated,
-          content: Text(
-            'تعذر فتح رابط التبرع',
-            textDirection: TextDirection.rtl,
-            style: _bodyFont(size: 13, color: _cream),
-          ),
-        ),
-      );
+
+      if (!launched && context.mounted) {
+        _showLinkError(context);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        _showLinkError(context);
+      }
     }
+  }
+
+  void _showLinkError(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: _surfaceElevated,
+        content: Text(
+          'تعذر فتح رابط التبرع',
+          textDirection: TextDirection.rtl,
+          style: _bodyFont(size: 13, color: _cream),
+        ),
+      ),
+    );
   }
 
   @override
@@ -109,10 +122,14 @@ class DonationScreen extends StatelessWidget {
                   ),
                   centerTitle: true,
                   actions: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 12),
-                      child: _BackButton(
-                        onTap: () => Navigator.pop(context),
+                    Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: _gold,
+                        ),
+                        onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ],
@@ -280,42 +297,6 @@ class DonationScreen extends StatelessWidget {
                 size: 14,
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BackButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _BackButton({
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFF15221C),
-            border: Border.all(
-              color: const Color(0xFFC6A15B).withOpacity(0.24),
-              width: 0.8,
-            ),
-          ),
-          child: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFFF4EFE3),
-            size: 16,
           ),
         ),
       ),

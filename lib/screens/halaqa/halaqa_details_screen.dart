@@ -206,6 +206,14 @@ class HalaqaDetailsScreen extends StatelessWidget {
             : halaqa.time.label,
       ),
       ('الفئة', halaqa.category.label),
+      if (halaqa.focus == HalaqaFocus.memorization ||
+          halaqa.focus == HalaqaFocus.review)
+        (
+          'النصاب',
+          (halaqa.nisab != null && halaqa.nisab!.trim().isNotEmpty)
+              ? halaqa.nisab!
+              : 'غير محدد',
+        ),
       if (halaqa.attendanceType == AttendanceType.inPerson)
         (
           'الحضانة',

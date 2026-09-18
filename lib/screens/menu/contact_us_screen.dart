@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ContactUsScreen extends StatefulWidget {
-  final VoidCallback? onBackToMenu;
-
-  const ContactUsScreen({
-    super.key,
-    this.onBackToMenu,
-  });
+  const ContactUsScreen({super.key});
 
   @override
   State<ContactUsScreen> createState() => _ContactUsScreenState();
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
-  static const _darkGreen = Color(0xFF24483A);
-  static const _cream = Color(0xFFF7F5EF);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF817B70);
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
 
-  final TextEditingController messageController =
-      TextEditingController();
+  final TextEditingController messageController = TextEditingController();
 
   @override
   void dispose() {
@@ -40,26 +38,29 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
-            backgroundColor: _cream,
+            backgroundColor: _surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
+              side: BorderSide(color: _border),
             ),
-            title: const Text(
+            title: Text(
               'تم الإرسال',
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: _text,
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _ivory,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            content: const Text(
+            content: Text(
               'شكرًا لتواصلك معنا، تم استلام استفسارك بنجاح.',
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: _muted,
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _textSecondary,
                 fontSize: 13,
                 height: 1.6,
               ),
@@ -70,12 +71,14 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   Navigator.pop(context);
                   messageController.clear();
                 },
-                child: const Text(
+                child: Text(
                   'تم',
                   textDirection: TextDirection.rtl,
                   style: TextStyle(
-                    color: _darkGreen,
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                    color: _gold,
                     fontSize: 13,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -91,34 +94,33 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: _cream,
-        appBar: AppBar(
-          backgroundColor: _darkGreen,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_forward,
-              color: Color(0xFFFFF8EA),
+        backgroundColor: _background,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: AppBar(
+              backgroundColor: _background,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              leadingWidth: 56,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: _BackButton(onTap: () => Navigator.pop(context)),
+              ),
+              title: Text(
+                'تواصل معنا',
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.amiri(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: _ivory,
+                ),
+              ),
+              centerTitle: true,
             ),
-            onPressed: () {
-              if (widget.onBackToMenu != null) {
-                widget.onBackToMenu!();
-              } else {
-                Navigator.pop(context);
-              }
-            },
           ),
-          title: const Text(
-            'تواصل معنا',
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: Color(0xFFFFF8EA),
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          centerTitle: true,
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -126,56 +128,54 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 8),
-              const Align(
+              Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   'يسعدنا تواصلك معنا',
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
-                  style: TextStyle(
+                  style: GoogleFonts.amiri(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: _darkGreen,
+                    color: _ivory,
                   ),
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'إذا كان لديك استفسار أو اقتراح أو ملاحظة، اكتبها لنا وسنسعد بالاطلاع عليها.',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.right,
                 style: TextStyle(
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                   fontSize: 13,
                   height: 1.7,
-                  color: _muted,
+                  color: _textSecondary,
                 ),
               ),
               const SizedBox(height: 24),
-
-              const Align(
+              Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   'للتواصل والاستفسارات العامة',
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
                   style: TextStyle(
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: _darkGreen,
+                    color: _gold,
                   ),
                 ),
               ),
               const SizedBox(height: 10),
-
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(17),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: _surface,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: const Color(0xFFE7E3D9),
-                  ),
+                  border: Border.all(color: _border),
                 ),
                 child: Row(
                   textDirection: TextDirection.rtl,
@@ -185,17 +185,17 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEDE8DC),
+                        color: _surfaceRaised,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.email_outlined,
-                        color: _darkGreen,
+                        color: _gold,
                         size: 22,
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -206,13 +206,15 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                               textDirection: TextDirection.rtl,
                               textAlign: TextAlign.right,
                               style: TextStyle(
+                                fontFamily:
+                                    GoogleFonts.ibmPlexSansArabic().fontFamily,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: _text,
+                                color: _ivory,
                               ),
                             ),
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Align(
                             alignment: Alignment.centerRight,
                             child: Text(
@@ -220,8 +222,10 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                               textDirection: TextDirection.ltr,
                               textAlign: TextAlign.right,
                               style: TextStyle(
+                                fontFamily:
+                                    GoogleFonts.ibmPlexSansArabic().fontFamily,
                                 fontSize: 12,
-                                color: _muted,
+                                color: _textSecondary,
                               ),
                             ),
                           ),
@@ -231,47 +235,44 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
-              const Align(
+              Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   'للاستفسارات والاقتراحات',
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
                   style: TextStyle(
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: _darkGreen,
+                    color: _gold,
                   ),
                 ),
               ),
               const SizedBox(height: 10),
-
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(17),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: _surface,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: const Color(0xFFE7E3D9),
-                  ),
+                  border: Border.all(color: _border),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerRight,
                       child: Text(
                         'الاستفسار أو الرسالة',
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.right,
                         style: TextStyle(
+                          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: _text,
+                          color: _ivory,
                         ),
                       ),
                     ),
@@ -281,34 +282,32 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       maxLines: 6,
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                        color: _ivory,
+                        fontSize: 13,
+                      ),
                       decoration: InputDecoration(
                         hintText: 'اكتب استفسارك أو رسالتك هنا...',
                         hintTextDirection: TextDirection.rtl,
-                        hintStyle: const TextStyle(
-                          color: _muted,
+                        hintStyle: TextStyle(
+                          color: _textSecondary,
                           fontSize: 12,
                         ),
                         filled: true,
-                        fillColor: _cream,
+                        fillColor: _surfaceRaised,
                         contentPadding: const EdgeInsets.all(14),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE1DCCE),
-                          ),
+                          borderSide: BorderSide(color: _border),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE1DCCE),
-                          ),
+                          borderSide: BorderSide(color: _border),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(
-                            color: _darkGreen,
-                            width: 1.2,
-                          ),
+                          borderSide: BorderSide(color: _gold, width: 1.2),
                         ),
                       ),
                     ),
@@ -319,19 +318,21 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       child: ElevatedButton(
                         onPressed: _sendMessage,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _darkGreen,
-                          foregroundColor: const Color(0xFFFFF8EA),
+                          backgroundColor: const Color(0xFF2C5142),
+                          foregroundColor: _ivory,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
+                            side: BorderSide(color: _gold.withOpacity(0.18)),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'إرسال',
                           textDirection: TextDirection.rtl,
                           style: TextStyle(
+                            fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                             fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -340,6 +341,40 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BackButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _BackButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF15221C),
+            border: Border.all(
+              color: const Color(0xFFC6A15B).withOpacity(0.24),
+              width: 0.8,
+            ),
+          ),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFFF4EFE3),
+            size: 16,
           ),
         ),
       ),

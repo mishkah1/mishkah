@@ -6,10 +6,14 @@ class AuthService {
   Future<AuthResponse> signUp({
     required String email,
     required String password,
+    String? fullName,
   }) async {
     return await _supabase.auth.signUp(
       email: email,
       password: password,
+      data: fullName != null && fullName.trim().isNotEmpty
+          ? {'full_name': fullName.trim()}
+          : null,
     );
   }
 
@@ -28,4 +32,10 @@ class AuthService {
   }
 
   User? get currentUser => _supabase.auth.currentUser;
+
+  String? get currentUserName {
+    final metadata = _supabase.auth.currentUser?.userMetadata;
+    final name = metadata?['full_name'] as String?;
+    return (name != null && name.trim().isNotEmpty) ? name.trim() : null;
+  }
 }

@@ -1,59 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SettingsScreen extends StatefulWidget {
-  final VoidCallback? onBackToMenu;
-
-  const SettingsScreen({
-    super.key,
-    this.onBackToMenu,
-  });
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  static const _darkGreen = Color(0xFF24483A);
-  static const _cream = Color(0xFFF7F5EF);
-  static const _brown = Color(0xFF9A7955);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF817B70);
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
 
-  bool _darkMode = false;
+  bool _darkMode = true;
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: _cream,
-        appBar: AppBar(
-          backgroundColor: _darkGreen,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_forward,
-              color: Color(0xFFFFF8EA),
+        backgroundColor: _background,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: AppBar(
+              backgroundColor: _background,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              leadingWidth: 56,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: _BackButton(onTap: () => Navigator.pop(context)),
+              ),
+              title: Text(
+                'الإعدادات',
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.amiri(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: _ivory,
+                ),
+              ),
+              centerTitle: true,
             ),
-            onPressed: () {
-              if (widget.onBackToMenu != null) {
-                widget.onBackToMenu!();
-              } else {
-                Navigator.pop(context);
-              }
-            },
           ),
-          title: const Text(
-            'الإعدادات',
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: Color(0xFFFFF8EA),
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          centerTitle: true,
         ),
         body: ListView(
           padding: const EdgeInsets.all(18),
@@ -66,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: 'تغيير مظهر التطبيق إلى الوضع الداكن',
               trailing: Switch(
                 value: _darkMode,
-                activeThumbColor: _darkGreen,
+                activeThumbColor: _gold,
                 onChanged: (value) {
                   setState(() {
                     _darkMode = value;
@@ -83,7 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: 'العربية',
               trailing: const Icon(
                 Icons.chevron_left_rounded,
-                color: _muted,
+                color: _textSecondary,
               ),
               onTap: _showLanguageDialog,
             ),
@@ -94,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: 'سياسة الخصوصية وشروط الاستخدام',
               trailing: const Icon(
                 Icons.chevron_left_rounded,
-                color: _muted,
+                color: _textSecondary,
               ),
               onTap: () {
                 Navigator.push(
@@ -127,10 +124,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title,
         textDirection: TextDirection.rtl,
         textAlign: TextAlign.right,
-        style: const TextStyle(
+        style: TextStyle(
+          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
           fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: _brown,
+          fontWeight: FontWeight.w700,
+          color: _gold,
         ),
       ),
     );
@@ -144,12 +142,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     VoidCallback? onTap,
   }) {
     return Material(
-      color: Colors.white,
+      color: _surface,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: Padding(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _border),
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: 14,
             vertical: 13,
@@ -161,12 +163,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEDE8DC),
+                  color: _surfaceRaised,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
-                  color: _darkGreen,
+                  color: _gold,
                   size: 21,
                 ),
               ),
@@ -181,10 +183,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title,
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.right,
-                        style: const TextStyle(
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                           fontSize: 13.5,
-                          fontWeight: FontWeight.w500,
-                          color: _text,
+                          fontWeight: FontWeight.w600,
+                          color: _ivory,
                         ),
                       ),
                     ),
@@ -195,9 +198,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         subtitle,
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.right,
-                        style: const TextStyle(
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                           fontSize: 11,
-                          color: _muted,
+                          color: _textSecondary,
                         ),
                       ),
                     ),
@@ -222,43 +226,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
-            backgroundColor: _cream,
+            backgroundColor: _surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
+              side: BorderSide(color: _border),
             ),
-            title: const Text(
+            title: Text(
               'اللغة',
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: _text,
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _ivory,
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
               ),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildLanguageOption(
-                  title: 'العربية',
-                  selected: true,
-                ),
+                _buildLanguageOption(title: 'العربية', selected: true),
                 const SizedBox(height: 8),
-                _buildLanguageOption(
-                  title: 'English',
-                  selected: false,
-                ),
+                _buildLanguageOption(title: 'English', selected: false),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
+                child: Text(
                   'تم',
                   textDirection: TextDirection.rtl,
                   style: TextStyle(
-                    color: _darkGreen,
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                    color: _gold,
                     fontSize: 13,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -275,14 +277,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 12,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: selected
-            ? const Color(0xFFEDE8DC)
-            : Colors.transparent,
+        color: selected ? _surfaceRaised : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -292,19 +289,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             selected
                 ? Icons.radio_button_checked
                 : Icons.radio_button_off,
-            color: _darkGreen,
+            color: _gold,
             size: 20,
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               title,
-              textDirection: title == 'English'
-                  ? TextDirection.ltr
-                  : TextDirection.rtl,
+              textDirection:
+                  title == 'English' ? TextDirection.ltr : TextDirection.rtl,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                color: _text,
+              style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                color: _ivory,
                 fontSize: 13,
               ),
             ),
@@ -318,38 +315,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class PrivacyScreen extends StatelessWidget {
   const PrivacyScreen({super.key});
 
-  static const _darkGreen = Color(0xFF24483A);
-  static const _cream = Color(0xFFF7F5EF);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF817B70);
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: _cream,
-        appBar: AppBar(
-          backgroundColor: _darkGreen,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_forward,
-              color: Color(0xFFFFF8EA),
+        backgroundColor: _background,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: AppBar(
+              backgroundColor: _background,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              leadingWidth: 56,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: _BackButton(onTap: () => Navigator.pop(context)),
+              ),
+              title: Text(
+                'الخصوصية',
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.amiri(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: _ivory,
+                ),
+              ),
+              centerTitle: true,
             ),
-            onPressed: () => Navigator.pop(context),
           ),
-          title: const Text(
-            'الخصوصية',
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: Color(0xFFFFF8EA),
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          centerTitle: true,
         ),
         body: ListView(
           padding: const EdgeInsets.all(18),
@@ -380,54 +384,82 @@ class PrivacyScreen extends StatelessWidget {
     );
   }
 
-  Widget _privacyCard({
-    required String title,
-    required String text,
-  }) {
+  Widget _privacyCard({required String title, required String text}) {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFE7E3D9),
-        ),
+        border: Border.all(color: _border),
       ),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                title,
-                textDirection: TextDirection.rtl,
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: _darkGreen,
-                ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              title,
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: _gold,
               ),
             ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                text,
-                textDirection: TextDirection.rtl,
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                  fontSize: 13,
-                  height: 1.8,
-                  color: _muted,
-                ),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              text,
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                fontSize: 13,
+                height: 1.8,
+                color: _textSecondary,
               ),
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BackButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _BackButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF15221C),
+            border: Border.all(
+              color: const Color(0xFFC6A15B).withOpacity(0.24),
+              width: 0.8,
+            ),
+          ),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFFF4EFE3),
+            size: 16,
+          ),
         ),
       ),
     );

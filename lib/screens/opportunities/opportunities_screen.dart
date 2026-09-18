@@ -58,9 +58,18 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             backgroundColor: _surface,
             expandedHeight: 90,
             pinned: true,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_forward, color: _gold),
-              onPressed: () => Navigator.pop(context),
+            automaticallyImplyLeading: false,
+            leading: Directionality(
+              // نضمن إن السهم يفضل متجه لليسار دايمًا، بعيدًا عن أي
+              // انعكاس تلقائي محتمل حسب اتجاه الشاشة.
+              textDirection: TextDirection.ltr,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: _gold,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
             ),
             title: Text('الفرص',
                 style: GoogleFonts.amiri(

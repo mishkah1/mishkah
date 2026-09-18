@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'favorites_screen.dart';
 import 'my_registrations_screen.dart';
+import 'package:mishkah/screens/menu/about_us_screen.dart';
+import 'package:mishkah/screens/menu/contact_us_screen.dart';
+import 'package:mishkah/screens/menu/feq_screen.dart';
+import 'package:mishkah/screens/menu/settings_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -20,101 +25,210 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final email = Supabase.instance.client.auth.currentUser?.email ?? '';
+    final user = Supabase.instance.client.auth.currentUser;
+    final name = user?.userMetadata?['full_name'] as String?;
+    final displayName =
+        (name != null && name.trim().isNotEmpty) ? name.trim() : 'بك';
 
-    return Scaffold(
-      backgroundColor: _background,
-      appBar: AppBar(
-        backgroundColor: _surface,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          'حسابي',
-          style: GoogleFonts.amiri(
-            color: _ivory,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.25,
-                decoration: BoxDecoration(
-                  color: _surfaceRaised,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: _border,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: _background,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: AppBar(
+              backgroundColor: _surface,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              automaticallyImplyLeading: false,
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: _gold,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text(
+                  'حسابي',
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.amiri(
+                    color: _ivory,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                clipBehavior: Clip.antiAlias,
-                child: Image.asset(
-                  'assets/images/account.png',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Icon(
-                        Icons.person_outline_rounded,
-                        size: 70,
-                        color: _gold,
+              ),
+              centerTitle: true,
+            ),
+          ),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.22,
+                  decoration: BoxDecoration(
+                    color: _surfaceRaised,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: _border),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.asset(
+                    'assets/images/account.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Icon(
+                          Icons.person_outline_rounded,
+                          size: 70,
+                          color: _gold,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Text(
+                  'أهلاً وسهلاً بك',
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.ibmPlexSansArabic(
+                    color: _textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  displayName,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.amiri(
+                    color: _ivory,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 28),
+
+                _SectionTitle(title: 'نشاطي'),
+                const SizedBox(height: 12),
+                _AccountOption(
+                  icon: Icons.assignment_outlined,
+                  title: 'تسجيلاتي',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MyRegistrationsScreen(),
                       ),
                     );
                   },
                 ),
-              ),
-              const SizedBox(height: 22),
-              Text(
-                'أهلاً بك',
-                style: GoogleFonts.amiri(
-                  color: _ivory,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
+                const SizedBox(height: 12),
+                _AccountOption(
+                  icon: Icons.favorite_border_rounded,
+                  title: 'مفضلاتي',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const FavoritesScreen(),
+                      ),
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                email,
-                textDirection: TextDirection.ltr,
-                style: TextStyle(
-                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
-                  color: _textSecondary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+
+                const SizedBox(height: 26),
+                _SectionTitle(title: 'الدعم والمعلومات'),
+                const SizedBox(height: 12),
+                _AccountOption(
+                  icon: Icons.help_outline_rounded,
+                  title: 'الأسئلة الشائعة',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const FeqScreen()),
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 28),
-              _AccountOption(
-                icon: Icons.assignment_outlined,
-                title: 'تسجيلاتي',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const MyRegistrationsScreen(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 14),
-              _AccountOption(
-                icon: Icons.favorite_border_rounded,
-                title: 'مفضلاتي',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const FavoritesScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
+                const SizedBox(height: 12),
+                _AccountOption(
+                  icon: Icons.info_outline_rounded,
+                  title: 'من نحن',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                _AccountOption(
+                  icon: Icons.mail_outline_rounded,
+                  title: 'تواصل معنا',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ContactUsScreen()),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 26),
+                Container(
+                  height: 1,
+                  color: _border,
+                ),
+                const SizedBox(height: 22),
+                _AccountOption(
+                  icon: Icons.settings_outlined,
+                  title: 'الإعدادات',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+
+  const _SectionTitle({required this.title});
+
+  static const _gold = Color(0xFFC6A15B);
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Text(
+        title,
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.right,
+        style: TextStyle(
+          fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+          color: _gold,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -153,28 +267,11 @@ class _AccountOption extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: _border,
-            ),
+            border: Border.all(color: _border),
           ),
           child: Row(
+            textDirection: TextDirection.rtl,
             children: [
-              Icon(
-                Icons.arrow_back_ios_new_rounded,
-                size: 17,
-                color: _sand,
-              ),
-              const Spacer(),
-              Text(
-                title,
-                style: TextStyle(
-                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
-                  color: _ivory,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(width: 14),
               Container(
                 width: 42,
                 height: 42,
@@ -187,6 +284,26 @@ class _AccountOption extends StatelessWidget {
                   color: _gold,
                   size: 22,
                 ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  title,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                    color: _ivory,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 17,
+                color: _sand,
               ),
             ],
           ),

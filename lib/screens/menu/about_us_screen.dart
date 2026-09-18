@@ -1,52 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AboutUsScreen extends StatelessWidget {
-  final VoidCallback? onBackToMenu;
+  const AboutUsScreen({super.key});
 
-  const AboutUsScreen({
-    super.key,
-    this.onBackToMenu,
-  });
-
-  static const _darkGreen = Color(0xFF24483A);
-  static const _cream = Color(0xFFF7F5EF);
-  static const _brown = Color(0xFF9A7955);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF817B70);
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _surfaceRaised = Color(0xFF1B2B24);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _goldLight = Color(0xFFD8BC7A);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: _cream,
-        appBar: AppBar(
-          backgroundColor: _darkGreen,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_forward,
-              color: Color(0xFFFFF8EA),
+        backgroundColor: _background,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: AppBar(
+              backgroundColor: _background,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              leadingWidth: 56,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: _BackButton(onTap: () => Navigator.pop(context)),
+              ),
+              title: Text(
+                'من نحن',
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.amiri(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: _ivory,
+                ),
+              ),
+              centerTitle: true,
             ),
-            onPressed: () {
-              if (onBackToMenu != null) {
-                onBackToMenu!();
-              } else {
-                Navigator.pop(context);
-              }
-            },
           ),
-          title: const Text(
-            'من نحن',
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: Color(0xFFFFF8EA),
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          centerTitle: true,
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -59,35 +57,37 @@ class AboutUsScreen extends StatelessWidget {
                   width: 76,
                   height: 76,
                   decoration: BoxDecoration(
-                    color: _darkGreen,
+                    color: _surfaceRaised,
                     borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: _gold.withOpacity(0.2)),
                   ),
                   child: const Icon(
                     Icons.auto_stories_rounded,
-                    color: Color(0xFFFFF8EA),
+                    color: _gold,
                     size: 38,
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'مِشكاة',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: GoogleFonts.amiri(
                   fontSize: 27,
                   fontWeight: FontWeight.w900,
-                  color: _darkGreen,
+                  color: _ivory,
                 ),
               ),
               const SizedBox(height: 5),
-              const Text(
+              Text(
                 'طريقك إلى القرآن والعمل',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
                 style: TextStyle(
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                   fontSize: 12,
-                  color: _brown,
+                  color: _goldLight,
                 ),
               ),
               const SizedBox(height: 28),
@@ -112,24 +112,25 @@ class AboutUsScreen extends StatelessWidget {
                     'استعراض الدور والحلقات، معرفة تفاصيل البرامج ومواعيدها، متابعة الفرص القادمة، التسجيل في البرامج، وحفظ ما يهمك للرجوع إليه لاحقًا.',
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'مِشكاة',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: GoogleFonts.amiri(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: _muted,
+                  color: _textSecondary,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'رفيقك نحو الخير والعلم',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
                 style: TextStyle(
+                  fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                   fontSize: 11,
-                  color: _muted,
+                  color: _textSecondary,
                 ),
               ),
               const SizedBox(height: 15),
@@ -149,11 +150,9 @@ class AboutUsScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(17),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFE7E3D9),
-        ),
+        border: Border.all(color: _border),
       ),
       child: Row(
         textDirection: TextDirection.rtl,
@@ -163,12 +162,12 @@ class AboutUsScreen extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: const Color(0xFFEDE8DC),
+              color: _surfaceRaised,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               icon,
-              color: _darkGreen,
+              color: _gold,
               size: 21,
             ),
           ),
@@ -183,10 +182,11 @@ class AboutUsScreen extends StatelessWidget {
                     title,
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.right,
-                    style: const TextStyle(
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: _text,
+                      color: _ivory,
                     ),
                   ),
                 ),
@@ -197,10 +197,11 @@ class AboutUsScreen extends StatelessWidget {
                     text,
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.right,
-                    style: const TextStyle(
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                       fontSize: 12,
                       height: 1.7,
-                      color: _muted,
+                      color: _textSecondary,
                     ),
                   ),
                 ),
@@ -208,6 +209,40 @@ class AboutUsScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _BackButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _BackButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF15221C),
+            border: Border.all(
+              color: const Color(0xFFC6A15B).withOpacity(0.24),
+              width: 0.8,
+            ),
+          ),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFFF4EFE3),
+            size: 16,
+          ),
+        ),
       ),
     );
   }

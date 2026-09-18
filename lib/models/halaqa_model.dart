@@ -63,7 +63,7 @@ class HalaqaModel {
     this.onlineMeetingUrl,
   });
 
-  bool get belongsToDar => darId != null && darId!.isNotEmpty;
+  bool get belongsToDar => darId != null && darId!.trim().isNotEmpty;
 
   bool get isInPerson => attendanceType == AttendanceType.inPerson;
 
@@ -72,9 +72,9 @@ class HalaqaModel {
 
   factory HalaqaModel.fromJson(Map<String, dynamic> json) {
     return HalaqaModel(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       name: json['name'] as String,
-      darId: json['dar_id'] as String?,
+      darId: json['dar_id']?.toString().trim(),
       attendanceType: AttendanceType.values.firstWhere(
         (e) => e.name == json['attendance_type'],
       ),

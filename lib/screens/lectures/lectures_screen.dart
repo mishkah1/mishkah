@@ -100,10 +100,14 @@ class _LecturesScreenState extends State<LecturesScreen> {
                   ),
                   centerTitle: true,
                   actions: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 12),
-                      child: _BackButton(
-                        onTap: () => Navigator.pop(context),
+                    Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: _gold,
+                        ),
+                        onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ],
@@ -272,42 +276,6 @@ class _LecturesScreenState extends State<LecturesScreen> {
                   ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _BackButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _BackButton({
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFF15221C),
-            border: Border.all(
-              color: const Color(0xFFC6A15B).withOpacity(0.24),
-              width: 0.8,
-            ),
-          ),
-          child: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFFF4EFE3),
-            size: 16,
-          ),
-        ),
       ),
     );
   }

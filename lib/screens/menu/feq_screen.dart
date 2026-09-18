@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FeqScreen extends StatelessWidget {
-  final VoidCallback? onBackToMenu;
+  const FeqScreen({super.key});
 
-  const FeqScreen({
-    super.key,
-    this.onBackToMenu,
-  });
-
-  static const _darkGreen = Color(0xFF24483A);
-  static const _cream = Color(0xFFF7F5EF);
-  static const _brown = Color(0xFF9A7955);
-  static const _text = Color(0xFF25231E);
-  static const _muted = Color(0xFF817B70);
+  static const _background = Color(0xFF0D1713);
+  static const _surface = Color(0xFF15221C);
+  static const _border = Color(0xFF2A3A32);
+  static const _gold = Color(0xFFC6A15B);
+  static const _goldLight = Color(0xFFD8BC7A);
+  static const _ivory = Color(0xFFF4EFE3);
+  static const _textSecondary = Color(0xFFA8B0AA);
 
   @override
   Widget build(BuildContext context) {
@@ -42,56 +40,56 @@ class FeqScreen extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: _cream,
-        appBar: AppBar(
-          backgroundColor: _darkGreen,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_forward,
-              color: Color(0xFFFFF8EA),
+        backgroundColor: _background,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: AppBar(
+              backgroundColor: _background,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              leadingWidth: 56,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: _BackButton(onTap: () => Navigator.pop(context)),
+              ),
+              title: Text(
+                'الأسئلة الشائعة',
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.amiri(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: _ivory,
+                ),
+              ),
+              centerTitle: true,
             ),
-            onPressed: () {
-              if (onBackToMenu != null) {
-                onBackToMenu!();
-              } else {
-                Navigator.pop(context);
-              }
-            },
           ),
-          title: const Text(
-            'الأسئلة الشائعة',
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: Color(0xFFFFF8EA),
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          centerTitle: true,
         ),
         body: ListView(
           padding: const EdgeInsets.all(18),
           children: [
-            const Text(
+            Text(
               'كيف يمكننا مساعدتك؟',
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.right,
-              style: TextStyle(
+              style: GoogleFonts.amiri(
                 fontSize: 21,
                 fontWeight: FontWeight.w800,
-                color: _darkGreen,
+                color: _ivory,
               ),
             ),
             const SizedBox(height: 7),
-            const Text(
+            Text(
               'إجابات عن أكثر الأسئلة شيوعًا حول مِشكاة.',
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.right,
               style: TextStyle(
+                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                 fontSize: 12,
-                color: _muted,
+                color: _textSecondary,
               ),
             ),
             const SizedBox(height: 18),
@@ -99,11 +97,9 @@ class FeqScreen extends StatelessWidget {
               (question) => Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: _surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFFE7E3D9),
-                  ),
+                  border: Border.all(color: _border),
                 ),
                 child: Theme(
                   data: Theme.of(context).copyWith(
@@ -114,22 +110,18 @@ class FeqScreen extends StatelessWidget {
                       horizontal: 16,
                       vertical: 2,
                     ),
-                    childrenPadding: const EdgeInsets.fromLTRB(
-                      16,
-                      0,
-                      16,
-                      16,
-                    ),
-                    iconColor: _brown,
-                    collapsedIconColor: _brown,
+                    childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    iconColor: _goldLight,
+                    collapsedIconColor: _goldLight,
                     title: Text(
                       question.$1,
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: _text,
+                        color: _ivory,
                       ),
                     ),
                     children: [
@@ -139,10 +131,11 @@ class FeqScreen extends StatelessWidget {
                           question.$2,
                           textDirection: TextDirection.rtl,
                           textAlign: TextAlign.right,
-                          style: const TextStyle(
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                             fontSize: 12,
                             height: 1.7,
-                            color: _muted,
+                            color: _textSecondary,
                           ),
                         ),
                       ),
@@ -152,6 +145,40 @@ class FeqScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BackButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _BackButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF15221C),
+            border: Border.all(
+              color: const Color(0xFFC6A15B).withOpacity(0.24),
+              width: 0.8,
+            ),
+          ),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFFF4EFE3),
+            size: 16,
+          ),
         ),
       ),
     );
