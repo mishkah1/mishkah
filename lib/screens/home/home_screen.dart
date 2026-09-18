@@ -765,9 +765,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   ],
                                 ),
                                 const Spacer(),
-                                // زر المينيو انحذف — كل شي صار داخل "حسابي".
-                                // هذا SizedBox يحافظ على توازن العنوان بالنص.
-                                const SizedBox(width: 42),
+                                // خانة الحساب انتقلت من البوتوم بار إلى هنا،
+                                // بنفس ارتفاع أيقونة الجرس.
+                                _GlassIconButton(
+                                  icon: Icons.person_outline_rounded,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const AccountScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ],
                             ),
                           ),
@@ -1353,7 +1363,6 @@ class _BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      {'title': 'حسابي', 'icon': Icons.person_outline_rounded},
       {'title': 'الفرص', 'icon': Icons.auto_awesome_outlined},
       {'title': 'تبرع', 'icon': Icons.volunteer_activism_outlined},
       {'title': 'محاضرات', 'icon': Icons.mic_rounded},
@@ -1378,9 +1387,6 @@ class _BottomNavBar extends StatelessWidget {
               return Expanded(
                 child: InkWell(
                   onTap: () {
-                    if (item['title'] == 'حسابي') {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountScreen()));
-                    }
                     if (item['title'] == 'الفرص') {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const OpportunitiesScreen()));
                     }

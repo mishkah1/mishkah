@@ -272,7 +272,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       _buildSection(
                         icon: Icons.location_on_outlined,
                         title: 'طريقة الحضور',
-                        subtitle: 'اختاري الطريقة المناسبة لك',
+                        subtitle: 'اختر الطريقة المناسبة لك',
                         child: Column(
                           children: [
                             _buildLargeChoice(
@@ -316,7 +316,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         _buildSection(
                           icon: Icons.schedule_rounded,
                           title: 'وقت الحلقة',
-                          subtitle: 'متى تفضلين الحضور؟',
+                          subtitle: 'متى تفضل الحضور؟',
                           child: _buildChips([
                             _buildChip(
                               'صباحي',
@@ -353,7 +353,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         _buildSection(
                           icon: Icons.access_time_rounded,
                           title: 'وقت التسميع',
-                          subtitle: 'اختاري الوقت المناسب لك',
+                          subtitle: 'اختر الوقت المناسب لك',
                           child: onlineTimes.isEmpty
                               ? _buildEmptyOption(
                                   'لا توجد أوقات تسميع متاحة حاليًا',
@@ -382,7 +382,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       _buildSection(
                         icon: Icons.groups_2_outlined,
                         title: 'الفئة',
-                        subtitle: 'لمن تبحثين عن الحلقة؟',
+                        subtitle: 'لمن تبحث عن الحلقة؟',
                         child: _buildChips([
                           _buildChip(
                             'نساء',
@@ -433,7 +433,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       _buildSection(
                         icon: Icons.person_outline_rounded,
                         title: 'الفئة العمرية',
-                        subtitle: 'حددي العمر المناسب',
+                        subtitle: 'حدد العمر المناسب',
                         child: _buildChips([
                           _buildChip(
                             'أطفال',
@@ -494,7 +494,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       _buildSection(
                         icon: Icons.payments_outlined,
                         title: 'الرسوم',
-                        subtitle: 'اختاري حسب ميزانيتك',
+                        subtitle: 'اختر حسب ميزانيتك',
                         child: _buildChips([
                           _buildChip(
                             'مجاني',
@@ -623,8 +623,8 @@ class _FilterScreenState extends State<FilterScreen> {
                           icon: Icons.menu_book_rounded,
                           title: 'عدد الأوجه',
                           subtitle: isReview
-                              ? 'كم وجه تودين مراجعته؟'
-                              : 'كم وجه تودين حفظه؟',
+                              ? 'كم وجه تود مراجعته؟'
+                              : 'كم وجه تود حفظه؟',
                           child: nisabValues.isEmpty
                               ? _buildEmptyOption(
                                   'لا توجد خيارات متاحة حاليًا',
@@ -707,7 +707,7 @@ class _FilterScreenState extends State<FilterScreen> {
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              'اختاري ما يناسبك',
+              'اختر ما يناسبك',
               style: GoogleFonts.amiri(
                 fontSize: 25,
                 fontWeight: FontWeight.w700,
@@ -719,7 +719,7 @@ class _FilterScreenState extends State<FilterScreen> {
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              'خصصي بحثك عن حلقات ${widget.category} بالطريقة التي تناسبك.',
+              'خصص بحثك عن حلقات ${widget.category} بالطريقة التي تناسبك.',
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
@@ -758,7 +758,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   Text(
                     hasAnyFilter
                         ? '$activeFilterCount فلاتر محددة'
-                        : 'ابدئي باختيار ما يناسبك',
+                        : 'ابدأ باختيار ما يناسبك',
                     style: TextStyle(
                       fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
                       color: _ivory,
