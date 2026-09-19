@@ -1,11 +1,6 @@
 import 'submission_status.dart';
 export 'submission_status.dart';
 
-/// طلب إضافة دار معلّق، بانتظار موافقة الإدارة.
-///
-/// ملاحظة: هذا الموديل مستقل تمامًا عن DarModel الحقيقي — يخزّن كل شي
-/// كنصوص (String) عشان يسهل تعبئته من فورم بدون الحاجة لأي enum من
-/// dar_model.dart، وتحويله لصف حقيقي بجدول dars يصير فقط وقت الاعتماد.
 class PendingDarModel {
   final String id;
   final String submittedBy;
@@ -15,7 +10,7 @@ class PendingDarModel {
   final DateTime? reviewedAt;
 
   final String name;
-  final String attendanceType; // حضوري / أونلاين
+  final String attendanceType;
   final String? address;
   final String? mapsLink;
   final String phoneNumber;
@@ -84,7 +79,6 @@ class PendingDarModel {
     );
   }
 
-  /// يجهّز البيانات لإدخالها كطلب جديد بجدول pending_dars.
   Map<String, dynamic> toInsertJson() {
     return {
       'name': name,
@@ -105,9 +99,6 @@ class PendingDarModel {
     };
   }
 
-  /// يحوّل الطلب المعتمد إلى صف جاهز لجدول dars الحقيقي.
-  /// يعتمد على رابط الخرائط (maps_link) فقط — latitude/longitude
-  /// بجدول dars صارت اختيارية (NULL) لهذا النوع من الدور.
   Map<String, dynamic> toDarInsertJson() {
     return {
       'name': name,

@@ -13,7 +13,6 @@ class _C {
   static const textMuted = Color(0xFF7E8882);
 }
 
-/// يعرض للمستخدم حالة طلباته المرسلة (قيد المراجعة / مقبول / مرفوض).
 class MySubmissionsScreen extends StatefulWidget {
   const MySubmissionsScreen({super.key});
 

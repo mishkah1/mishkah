@@ -14,8 +14,6 @@ class _C {
   static const textMuted = Color(0xFF7E8882);
 }
 
-/// شاشة مراجعة طلبات الدور والحلقات المعلّقة (للإدارة فقط — RLS يمنع غيرها
-/// من الوصول لهذه البيانات أصلًا حتى لو حاول فتح هذي الشاشة).
 class AdminReviewScreen extends StatefulWidget {
   const AdminReviewScreen({super.key});
 
@@ -243,7 +241,6 @@ Widget _reviewField(TextEditingController c, String label, {int maxLines = 1}) {
   );
 }
 
-/// مراجعة/تعديل طلب دار قبل الاعتماد أو رفضه.
 class _DarReviewDetailScreen extends StatefulWidget {
   final PendingDarModel dar;
   final SubmissionRepository repo;
@@ -418,7 +415,6 @@ class _DarReviewDetailScreenState extends State<_DarReviewDetailScreen> {
   }
 }
 
-/// مراجعة/تعديل طلب حلقة قبل الاعتماد أو رفضه.
 class _HalaqaReviewDetailScreen extends StatefulWidget {
   final PendingHalaqaModel halaqa;
   final SubmissionRepository repo;

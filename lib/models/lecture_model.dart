@@ -4,7 +4,7 @@ class LectureModel {
   final String speakerName;
   final String dayLabel;
   final String periodLabel;
-  final String startTime; // "HH:mm:ss" كما ترجعها Supabase
+  final String startTime;
   final String endTime;
   final String? link;
 
@@ -19,18 +19,14 @@ class LectureModel {
     this.link,
   });
 
-  /// هل المحاضرة عندها رابط متاح؟
   bool get hasLink => link != null && link!.trim().isNotEmpty;
 
-  /// نص أعلى يسار البطاقة، مثل: "الجمعة عصرًا"
   String get scheduleLabel => '$dayLabel $periodLabel';
 
-  /// نص وقت المحاضرة، مثل: "4:00 - 5:30"
   String get timeRangeLabel {
     return '${_formatTime(startTime)} - ${_formatTime(endTime)}';
   }
 
-  /// يحول "16:00:00" إلى "4:00"
   String _formatTime(String time) {
     final parts = time.split(':');
     int hour = int.parse(parts[0]);

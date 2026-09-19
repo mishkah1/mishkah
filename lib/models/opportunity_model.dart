@@ -1,16 +1,11 @@
-/// الدور الوظيفي: معلمة/معلم أو إدارية/إداري.
 enum OpportunityRole { teacher, admin }
 
-/// الجنس المطلوب للفرصة.
 enum OpportunityGender { female, male, both }
 
-/// نوع موقع الفرصة: حضوري أو أونلاين.
 enum OpportunityLocationType { inPerson, online }
 
-/// وقت العمل: صباحي أو مسائي.
 enum OpportunityWorkingTime { morning, evening }
 
-/// يمثل فرصة عمل أو تطوع واحدة (تدريس أو عمل إداري) مرتبطة بدار أو حلقة.
 class OpportunityModel {
   final String id;
   final OpportunityRole role;
@@ -50,12 +45,8 @@ class OpportunityModel {
 
   bool get isInPerson => locationType == OpportunityLocationType.inPerson;
 
-  /// نطاق العمر جاهز للعرض، مثلا "من 22 إلى 40 سنة".
   String get ageRangeLabel => 'من $ageMin إلى $ageMax سنة';
 
-  /// المسمى الوظيفي بالصيغة الصحيحة نحويًا حسب الدور والجنس المطلوب
-  /// (معلمة/معلم/إدارية/إداري)، يُحسب مباشرة بدل ما يعتمد على النص
-  /// المخزّن بقاعدة البيانات حرفيًا.
   String get roleLabel {
     switch (role) {
       case OpportunityRole.teacher:
@@ -79,8 +70,6 @@ class OpportunityModel {
     }
   }
 
-  /// يحول أي صيغة من job_title (معلم/معلمة/إداري/إدارية) إلى OpportunityRole
-  /// بغض النظر عن صيغة الجنس المخزنة بالنص.
   static OpportunityRole _parseRole(String raw) {
     return raw.startsWith('معلم') ? OpportunityRole.teacher : OpportunityRole.admin;
   }
@@ -110,7 +99,6 @@ class OpportunityModel {
         : OpportunityWorkingTime.evening;
   }
 
-  /// تحويل صف قادم من Supabase (snake_case) إلى كائن OpportunityModel.
   factory OpportunityModel.fromJson(Map<String, dynamic> json) {
     return OpportunityModel(
       id: json['id'] as String,
@@ -134,9 +122,6 @@ class OpportunityModel {
     );
   }
 
-  /// تحويل الكائن إلى Map بصيغة snake_case (مفيد عند الإدراج بـ Supabase).
-  /// لاحظي إن job_title يُكتب هنا بالصيغة الصحيحة (roleLabel) تلقائيًا
-  /// حسب الدور والجنس، بدل ما تكتبينها يدويًا وتخطئين بالتطابق.
   Map<String, dynamic> toJson() {
     return {
       'id': id,

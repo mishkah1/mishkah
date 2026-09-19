@@ -3,13 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../models/opportunity_model.dart';
 import 'opportunity_registration_screen.dart';
 
-/// صفحة تعرض كل تفاصيل فرصة عمل أو تطوع واحدة.
 class OpportunityDetailsScreen extends StatelessWidget {
   final OpportunityModel opportunity;
 
   const OpportunityDetailsScreen({super.key, required this.opportunity});
 
-  // ── هوية مِشكاة ──
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _surfaceRaised = Color(0xFF1B2B24);

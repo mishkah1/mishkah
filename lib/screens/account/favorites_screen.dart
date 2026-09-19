@@ -12,7 +12,6 @@ class FavoritesScreen extends StatefulWidget {
 class _FavoritesScreenState extends State<FavoritesScreen> {
   final LocalSavedService savedService = LocalSavedService.instance;
 
-  // ── هوية مِشكاة ──
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _surfaceRaised = Color(0xFF1B2B24);

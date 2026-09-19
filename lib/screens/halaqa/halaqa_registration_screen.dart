@@ -19,7 +19,7 @@ class HalaqaRegistrationScreen extends StatefulWidget {
 
 class _HalaqaRegistrationScreenState
     extends State<HalaqaRegistrationScreen> {
-  // هوية Mishkah الموحدة
+
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _surfaceElevated = Color(0xFF1B2B24);
@@ -377,7 +377,7 @@ class _HalaqaRegistrationScreenState
         color: _cream,
       ),
       decoration: _dropdownDecoration('اليوم'),
-      // نفرض لون العنصر المختار (الحالة المقفولة) كريمي بشكل صريح
+
       selectedItemBuilder: (context) {
         return days
             .map(

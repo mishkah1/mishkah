@@ -22,7 +22,7 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  // ── هوية مِشكاة ──
+
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _surfaceRaised = Color(0xFF1B2B24);
@@ -197,11 +197,6 @@ class _AccountScreenState extends State<AccountScreen> {
                   },
                 ),
 
-                // ── قسم صاحب الدار/الحلقة: يظهر فقط لمن يحتاجه ──
-                // مستخدم عادي (باحث عن حلقة): يشوف خيار تفعيل بسيط فقط.
-                // صاحب دار/حلقة (submitter) أو إدارة (admin): يشوف قسم
-                // "تسجيل بيانات" و"طلباتي" كامل. الإدارة تشوف زيادة
-                // "مراجعة الطلبات".
                 FutureBuilder<String>(
                   future: _roleFuture,
                   builder: (context, snap) {

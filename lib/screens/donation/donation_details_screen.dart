@@ -3,14 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/dar_model.dart';
 
-/// صفحة التبرع: صورة موحدة + آية ثابتة + كارد ينقل لرابط التبرع
-/// الخاص بجمعية مكنون.
 class DonationScreen extends StatelessWidget {
   final DarModel dar;
 
   const DonationScreen({super.key, required this.dar});
 
-  // هوية Mishkah الموحدة (نفس تصميم صفحة التسجيل بالحلقة)
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _surfaceElevated = Color(0xFF1B2B24);
@@ -57,9 +54,6 @@ class DonationScreen extends StatelessWidget {
   Future<void> _openDonationLink(BuildContext context) async {
     final uri = Uri.parse(_donationLink);
 
-    // نحاول الفتح مباشرة بدل الاعتماد على canLaunchUrl، لأنها ترجع false
-    // بشكل خاطئ على أندرويد 11+ إذا ما كان AndroidManifest.xml مُعدًا
-    // بالسماحية اللازمة (queries) حتى لو الرابط شغّال فعليًا.
     try {
       final launched = await launchUrl(
         uri,

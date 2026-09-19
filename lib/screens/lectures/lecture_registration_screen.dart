@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/lecture_model.dart';
 
-/// صفحة تسجيل المحاضرة: تطلب الاسم الكامل، تاريخ الميلاد، ورقم الجوال.
 class LectureRegistrationScreen extends StatefulWidget {
   final LectureModel lecture;
 
@@ -254,12 +253,11 @@ class _LectureRegistrationScreenState
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      // TODO: هنا لاحقا نرسل البيانات لجدول تسجيلات بـ Supabase
+
       _showSuccessDialog();
     }
   }
 
-  /// يعرض مربع نجاح فوق نفس الشاشة (Dialog)، مو شاشة جديدة.
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -310,8 +308,8 @@ class _LectureRegistrationScreenState
                           borderRadius: BorderRadius.circular(10)),
                     ),
                     onPressed: () {
-                      Navigator.pop(dialogContext); // يقفل مربع النجاح
-                      Navigator.pop(context); // يرجع لصفحة تفاصيل المحاضرة
+                      Navigator.pop(dialogContext);
+                      Navigator.pop(context);
                     },
                     child: const Text('العودة',
                         style: TextStyle(color: _cream, fontSize: 14)),

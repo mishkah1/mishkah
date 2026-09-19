@@ -1,7 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/opportunity_model.dart';
 
-/// مسؤول عن جلب بيانات الفرص من Supabase.
 class OpportunityRepository {
   final SupabaseClient _client = Supabase.instance.client;
 

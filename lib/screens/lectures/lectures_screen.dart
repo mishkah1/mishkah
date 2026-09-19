@@ -12,7 +12,7 @@ class LecturesScreen extends StatefulWidget {
 }
 
 class _LecturesScreenState extends State<LecturesScreen> {
-  // هوية Mishkah الموحدة
+
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _surfaceElevated = Color(0xFF1B2B24);
@@ -186,7 +186,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // الصف العلوي: اليوم والفترة يمين، الوقت يسار
+
           Row(
             textDirection: TextDirection.rtl,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -217,7 +217,6 @@ class _LecturesScreenState extends State<LecturesScreen> {
           ),
           const SizedBox(height: 12),
 
-          // اسم المحاضرة
           Text(
             lecture.title,
             textDirection: TextDirection.rtl,
@@ -229,7 +228,6 @@ class _LecturesScreenState extends State<LecturesScreen> {
           ),
           const SizedBox(height: 4),
 
-          // اسم المحاضر
           Text(
             lecture.speakerName,
             textDirection: TextDirection.rtl,
@@ -237,7 +235,6 @@ class _LecturesScreenState extends State<LecturesScreen> {
           ),
           const SizedBox(height: 14),
 
-          // الزر السفلي
           SizedBox(
             width: double.infinity,
             child: lecture.hasLink

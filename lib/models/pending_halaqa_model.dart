@@ -1,7 +1,6 @@
 import 'submission_status.dart';
 export 'submission_status.dart';
 
-/// طلب إضافة حلقة معلّق، بانتظار موافقة الإدارة.
 class PendingHalaqaModel {
   final String id;
   final String submittedBy;
@@ -102,10 +101,6 @@ class PendingHalaqaModel {
     };
   }
 
-  /// يحوّل الطلب المعتمد إلى صف جاهز لجدول halaqas الحقيقي.
-  /// dar_id تحطينه يدويًا وقت الاعتماد بعد ربط الاسم بالدار الصحيح.
-  /// عمود nisab بجدول halaqas يُستخدم فعليًا لتخزين "مقدار الحفظ" —
-  /// فنفضّل قيمة memorizationAmount، وإذا ما فيه نرجع لقيمة nisab.
   Map<String, dynamic> toHalaqaInsertJson({String? darId}) {
     return {
       'name': name,

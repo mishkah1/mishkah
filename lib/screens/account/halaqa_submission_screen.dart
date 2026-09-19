@@ -15,7 +15,6 @@ class _C {
   static const textMuted = Color(0xFF7E8882);
 }
 
-// نفس خرائط dar_submission_screen.dart: عربي معروض <-> قيمة إنجليزية مخزنة.
 const _attendanceOptions = {'حضوري': 'inPerson', 'أونلاين': 'online'};
 const _statusOptions = {
   'مفتوح': 'open',
@@ -42,8 +41,6 @@ const _memorizationOptions = [
   'حر',
 ];
 
-/// فورم تسجيل بيانات حلقة جديدة — نفس أسئلة وترتيب نموذج "تعبئة بيانات
-/// مِشكاة" بالضبط، بس يذهب كطلب معلّق بانتظار موافقة الإدارة بدل الإيميل.
 class HalaqaSubmissionScreen extends StatefulWidget {
   const HalaqaSubmissionScreen({super.key});
 
@@ -183,8 +180,6 @@ class _HalaqaSubmissionScreenState extends State<HalaqaSubmissionScreen> {
       if (mounted) setState(() => _submitting = false);
     }
   }
-
-  // ---------------- عناصر واجهة مساعدة ----------------
 
   Widget _card({required String title, String? hint, required List<Widget> children}) {
     return Container(
@@ -490,7 +485,6 @@ class _HalaqaSubmissionScreenState extends State<HalaqaSubmissionScreen> {
   }
 }
 
-/// شريحة اختيار (نفس شكل ".choice" بالفورم الأصلي).
 class _ChoicePill extends StatelessWidget {
   final String label;
   final bool selected;

@@ -3,11 +3,9 @@ import '../models/dar_model.dart';
 import '../models/halaqa_model.dart';
 import '../models/lecture_model.dart';
 
-/// مسؤول عن كل عمليات جلب بيانات الدور والحلقات والمحاضرات من Supabase.
 class DarRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
-  /// يرجع كل الدور المسجلة بقاعدة البيانات.
   Future<List<DarModel>> fetchAllDars() async {
     final response = await _client.from('dars').select();
     return (response as List)
@@ -15,14 +13,12 @@ class DarRepository {
         .toList();
   }
 
-  /// يرجع دار واحد حسب المعرّف.
   Future<DarModel> fetchDarById(String darId) async {
     final response =
         await _client.from('dars').select().eq('id', darId).single();
     return DarModel.fromJson(response);
   }
 
-  /// يرجع كل الحلقات التابعة لدار معين.
   Future<List<HalaqaModel>> fetchHalaqasForDar(String darId) async {
     final response =
         await _client.from('halaqas').select().eq('dar_id', darId);
@@ -31,7 +27,6 @@ class DarRepository {
         .toList();
   }
 
-  /// يرجع كل الحلقات بالتطبيق.
   Future<List<HalaqaModel>> fetchAllHalaqas() async {
     final response = await _client.from('halaqas').select();
     return (response as List)
@@ -39,7 +34,6 @@ class DarRepository {
         .toList();
   }
 
-  /// يرجع الحلقات حسب حالة التسجيل مباشرة من قاعدة البيانات.
   Future<List<HalaqaModel>> fetchHalaqasByStatus(
     RegistrationStatus status,
   ) async {
@@ -53,17 +47,14 @@ class DarRepository {
         .toList();
   }
 
-  /// حلقات مفتوحة التسجيل.
   Future<List<HalaqaModel>> fetchOpenHalaqas() {
     return fetchHalaqasByStatus(RegistrationStatus.open);
   }
 
-  /// حلقات قريبًا.
   Future<List<HalaqaModel>> fetchComingSoonHalaqas() {
     return fetchHalaqasByStatus(RegistrationStatus.comingSoon);
   }
 
-  /// يرجع الدور المرتبطة بمجموعة معرّفات (يستخدم مع الحلقات الحضورية).
   Future<List<DarModel>> fetchDarsByIds(List<String> darIds) async {
     if (darIds.isEmpty) return [];
 
@@ -75,7 +66,6 @@ class DarRepository {
         .toList();
   }
 
-  /// يرجع كل المحاضرات مرتبة حسب وقت البداية.
   Future<List<LectureModel>> fetchLectures() async {
     final response = await _client
         .from('lectures')

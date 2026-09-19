@@ -52,7 +52,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   List<HalaqaModel> comingSoonHalaqas = [];
   bool isLoading = true;
 
-  // كل تصنيف له لون مختلف من نفس العائلة اللونية بدل ما تكون الأربعة متطابقة.
   final List<Map<String, dynamic>> categories = const [
     {
       'title': 'المراجعة',
@@ -668,7 +667,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           Column(
             children: [
-              // ── هيدر داكن راقٍ بدون بحث ──
+
               TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0.0, end: 1.0),
                 duration: const Duration(milliseconds: 950),
@@ -765,8 +764,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   ],
                                 ),
                                 const Spacer(),
-                                // خانة الحساب انتقلت من البوتوم بار إلى هنا،
-                                // بنفس ارتفاع أيقونة الجرس.
+
                                 _GlassIconButton(
                                   icon: Icons.person_outline_rounded,
                                   onTap: () {
@@ -813,7 +811,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
               const SizedBox(height: 22),
 
-              // ── باقي المحتوى القابل للتمرير ──
               Expanded(
                 child: SafeArea(
                   top: false,
@@ -1048,7 +1045,6 @@ class _HomeItem {
   });
 }
 
-/// أيقونة دائرية بخلفية زجاجية شفافة، تستخدم بالهيدر (الجرس).
 class _GlassIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -1073,7 +1069,6 @@ class _GlassIconButton extends StatelessWidget {
   }
 }
 
-/// وهج متحرك خافت جدًا يمنح الهيدر عمقًا وحياة بدون تشتيت.
 class _MishkahAmbientGlow extends StatefulWidget {
   const _MishkahAmbientGlow();
 
@@ -1134,7 +1129,6 @@ class _MishkahAmbientGlowState extends State<_MishkahAmbientGlow>
   }
 }
 
-/// زخرفة هندسية خفيفة جدًا بخلفية الهيدر (نفس روح النمط النجمي بالسبلاش).
 class _GeometricPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -1172,8 +1166,6 @@ class _GeometricPatternPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// خلفية الصفحة: عمق لوني + نجوم ثمانية + أقواس معمارية بشفافية منخفضة.
-/// صُممت لتظهر كتفاصيل فاخرة عند التأمل، لا كعنصر مشتت أثناء القراءة.
 class _MishkahBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -1276,7 +1268,6 @@ class _MishkahBackgroundPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// عنوان قسم مع سطر فرعي اختياري (يعطي هرمية أوضح بدل النص الجاف).
 class _SectionHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
@@ -1318,7 +1309,6 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// حالة فراغ بأيقونة بدل نص جاف بس.
 class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String message;
@@ -1541,7 +1531,7 @@ class _RegistrationCard extends StatelessWidget {
                             },
                           ),
                   ),
-                  // تدرّج شفاف من الأسفل يجعل أي عنصر فوق الصورة مقروء.
+
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -1557,7 +1547,7 @@ class _RegistrationCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // شارة حضوري/أونلاين فوق الصورة نفسها بخلفية زجاجية.
+
                   Positioned(
                     bottom: 8,
                     right: 8,
@@ -1899,7 +1889,7 @@ class _ComingSoonCard extends StatelessWidget {
                   ],
                 ),
               ),
-              // الزرّان هنا مرتبطان بالكارد كاملًا، وليس بمنطقة الصورة.
+
               Positioned(
                 top: 7,
                 left: 7,

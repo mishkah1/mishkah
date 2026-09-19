@@ -2,17 +2,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/pending_dar_model.dart';
 import '../models/pending_halaqa_model.dart';
 
-/// مسؤول عن كل عمليات "تسجيل بيانات دار/حلقة من المستخدمين"
-/// ومراجعتها واعتمادها من قبل الإدارة.
-///
-/// ملاحظة مهمة: هذا الملف لا يلمس جدولي dars/halaqas إلا في دالتي
-/// approveDar و approveHalaqa، وفقط بعد ما تعتمدين الطلب يدويًا.
 class SubmissionRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
   String? get _uid => _client.auth.currentUser?.id;
-
-  // ---------------- إرسال طلبات (submitter/admin فقط، تفرضه RLS) ----------------
 
   Future<void> submitDar(PendingDarModel dar) async {
     final uid = _uid;
@@ -31,8 +24,6 @@ class SubmissionRepository {
       'submitted_by': uid,
     });
   }
-
-  // ---------------- طلباتي (للمستخدم نفسه) ----------------
 
   Future<List<PendingDarModel>> fetchMySubmittedDars() async {
     final uid = _uid;
@@ -61,11 +52,6 @@ class SubmissionRepository {
         .toList();
   }
 
-  // ---------------- دور الحساب الحالي ----------------
-
-  /// يرجع 'user' أو 'submitter' أو 'admin'. الافتراضي 'user' لو ما فيه صف
-  /// أو لو صار أي خطأ (مثلاً جدول profiles لسا ما انعمل) — عشان القسم
-  /// الخاص بتسجيل البيانات ما يختفي بصمت أبدًا.
   Future<String> fetchCurrentUserRole() async {
     final uid = _uid;
     if (uid == null) return 'user';
@@ -85,13 +71,9 @@ class SubmissionRepository {
     return (await fetchCurrentUserRole()) == 'admin';
   }
 
-  /// يرقّي الحساب الحالي من 'user' إلى 'submitter' (صاحب دار/حلقة).
-  /// لا يقدر يوصل لـ 'admin' عن طريق هذي الدالة إطلاقًا (محمي بقاعدة البيانات).
   Future<void> becomeSubmitter() async {
     await _client.rpc('request_submitter_role');
   }
-
-  // ---------------- المراجعة (للإدارة فقط — RLS يمنع غيرها) ----------------
 
   Future<List<PendingDarModel>> fetchPendingDars() async {
     final response = await _client
@@ -116,8 +98,6 @@ class SubmissionRepository {
         .toList();
   }
 
-  /// تعتمد طلب دار: تدخل صف بجدول dars الحقيقي وتحدّث حالة الطلب.
-  /// [edits] قيم معدَّلة اختيارية (لو راجعتِ الطلب وغيّرتِ شي قبل الاعتماد).
   Future<void> approveDar(
     PendingDarModel request, {
     Map<String, dynamic>? edits,
@@ -130,7 +110,6 @@ class SubmissionRepository {
     }).eq('id', request.id);
   }
 
-  /// تعتمد طلب حلقة. مرري [darId] لو الحلقة تابعة لدار معتمد مسبقًا.
   Future<void> approveHalaqa(
     PendingHalaqaModel request, {
     String? darId,

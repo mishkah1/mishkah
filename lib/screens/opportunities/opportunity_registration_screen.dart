@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/opportunity_model.dart';
 
-/// صفحة التسجيل بفرصة عمل أو تطوع: تطلب الاسم الكامل، العمر، ورقم الجوال.
 class OpportunityRegistrationScreen extends StatefulWidget {
   final OpportunityModel opportunity;
 
@@ -15,7 +14,7 @@ class OpportunityRegistrationScreen extends StatefulWidget {
 
 class _OpportunityRegistrationScreenState
     extends State<OpportunityRegistrationScreen> {
-  // ── هوية مِشكاة ──
+
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _surfaceRaised = Color(0xFF1B2B24);
@@ -207,12 +206,11 @@ class _OpportunityRegistrationScreenState
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      // TODO: هنا لاحقا نرسل البيانات لجدول تسجيلات الفرص بـ Supabase
+
       _showSuccessDialog();
     }
   }
 
-  /// يعرض مربع نجاح فوق نفس الشاشة (Dialog)، مو شاشة جديدة.
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -266,8 +264,8 @@ class _OpportunityRegistrationScreenState
                           borderRadius: BorderRadius.circular(10)),
                     ),
                     onPressed: () {
-                      Navigator.pop(dialogContext); // يقفل مربع النجاح
-                      Navigator.pop(context); // يرجع لصفحة تفاصيل الفرصة
+                      Navigator.pop(dialogContext);
+                      Navigator.pop(context);
                     },
                     child: Text('العودة',
                         style: TextStyle(

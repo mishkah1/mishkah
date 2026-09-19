@@ -1,25 +1,17 @@
-/// طريقة الحضور: حضوري أو أونلاين.
 enum AttendanceType { inPerson, online }
 
-/// الفئة المستهدفة من الحلقة.
 enum HalaqaCategory { female, male, kids }
 
-/// نوع الحلقة: حفظ، مراجعة، تجويد، أو ترتيل.
 enum HalaqaFocus { memorization, review, tajweed }
 
-/// وقت انعقاد الحلقة: صباحي أو مسائي.
 enum HalaqaTime { morning, evening }
 
-/// الفئة العمرية المستهدفة.
 enum AgeGroup { kids, youth, adults, seniors }
 
-/// رسوم الحلقة: مجانية أو رسوم رمزية.
 enum FeeType { free, symbolic }
 
-/// حالة التسجيل بالحلقة.
 enum RegistrationStatus { open, comingSoon, closed }
 
-/// يمثل بيانات حلقة تحفيظ واحدة، سواء تابعة لدار حضوري أو حلقة أونلاين.
 class HalaqaModel {
   final String id;
   final String name;
@@ -133,7 +125,6 @@ class HalaqaModel {
   }
 }
 
-/// تحويل قيمة HalaqaFocus إلى نص عربي يُعرض بالواجهة.
 extension HalaqaFocusLabel on HalaqaFocus {
   String get label {
     switch (this) {

@@ -1,9 +1,7 @@
 import 'halaqa_model.dart';
 
-/// حالة التسجيل بالدار (هل مفتوح للتسجيل حاليا أو قريبا).
 enum DarRegistrationStatus { open, comingSoon, closed }
 
-/// يمثل بيانات دار تحفيظ واحدة داخل تطبيق مشكاة.
 class DarModel {
   final String id;
   final String name;
@@ -17,27 +15,17 @@ class DarModel {
   final String? description;
   final String? donationLink;
 
-  // ── التصنيفات: قوائم لأن الدار يقدم أكثر من نوع في نفس الوقت ──
-
-  /// الأنواع المتوفرة بالدار (نسائي، رجالي، أطفال).
   final List<HalaqaCategory> categories;
 
-  /// الأوقات المتوفرة بالدار (صباحي، مسائي).
   final List<HalaqaTime> times;
 
-  /// الفئات العمرية المستهدفة بالدار.
   final List<AgeGroup> ageGroups;
 
-  /// أنواع الرسوم المتوفرة بالدار (مجاني، رسوم رمزية).
   final List<FeeType> feeTypes;
-
-  // ── خدمات الموقع ──
 
   final bool hasDaycare;
   final bool hasParking;
   final bool isAccessible;
-
-  // ── حالة التسجيل بالدار ──
 
   final DarRegistrationStatus registrationStatus;
 
@@ -66,21 +54,16 @@ class DarModel {
     this.halaqaIds = const [],
   });
 
-  /// يرجع true إذا كان للدار موقع إلكتروني فعلي.
   bool get hasWebsite => websiteUrl != null && websiteUrl!.trim().isNotEmpty;
 
-  /// يرجع true إذا كان للدار رابط تبرع فعلي.
   bool get hasDonationLink =>
       donationLink != null && donationLink!.trim().isNotEmpty;
 
-  /// يرجع true إذا كان للدار رابط خرائط قوقل فعلي.
   bool get hasMapsLink => mapsLink != null && mapsLink!.trim().isNotEmpty;
 
-  /// يرجع true إذا كان التسجيل بالدار مفتوح حاليا.
   bool get isRegistrationOpen =>
       registrationStatus == DarRegistrationStatus.open;
 
-  /// دالة مساعدة: تحول قائمة نصوص من Supabase إلى قائمة enum.
   static List<T> _parseEnumList<T extends Enum>(
     dynamic raw,
     List<T> values,
@@ -91,7 +74,6 @@ class DarModel {
         .toList();
   }
 
-  /// تحويل صف قادم من Supabase (snake_case) إلى كائن DarModel.
   factory DarModel.fromJson(Map<String, dynamic> json) {
     return DarModel(
       id: json['id'] as String,
@@ -116,13 +98,11 @@ class DarModel {
       registrationStatus: DarRegistrationStatus.values.firstWhere(
         (e) => e.name == json['registration_status'],
       ),
-      // halaqaIds ما يجي من عمود بجدول dars مباشرة، يتم جلبه بطلب منفصل
-      // من جدول halaqas عن طريق dar_id (شوفي DarRepository).
+
       halaqaIds: const [],
     );
   }
 
-  /// تحويل الكائن إلى Map بصيغة snake_case (مفيد عند الإدراج بـ Supabase).
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -148,7 +128,6 @@ class DarModel {
   }
 }
 
-/// تحويل حالة تسجيل الدار إلى نص عربي يُعرض بالواجهة.
 extension DarRegistrationStatusLabel on DarRegistrationStatus {
   String get label {
     switch (this) {

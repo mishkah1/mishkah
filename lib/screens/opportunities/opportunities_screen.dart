@@ -4,7 +4,6 @@ import '../../models/opportunity_model.dart';
 import '../../repositories/opportunity_repository.dart';
 import 'opportunity_details_screen.dart';
 
-/// صفحة تعرض كل فرص العمل والتطوع المتاحة، تجيب بياناتها بنفسها من Supabase.
 class OpportunitiesScreen extends StatefulWidget {
   const OpportunitiesScreen({super.key});
 
@@ -13,7 +12,7 @@ class OpportunitiesScreen extends StatefulWidget {
 }
 
 class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
-  // ── هوية مِشكاة ──
+
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
   static const _gold = Color(0xFFC6A15B);
@@ -60,8 +59,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             pinned: true,
             automaticallyImplyLeading: false,
             leading: Directionality(
-              // نضمن إن السهم يفضل متجه لليسار دايمًا، بعيدًا عن أي
-              // انعكاس تلقائي محتمل حسب اتجاه الشاشة.
+
               textDirection: TextDirection.ltr,
               child: IconButton(
                 icon: const Icon(

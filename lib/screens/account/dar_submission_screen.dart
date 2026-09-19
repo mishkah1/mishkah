@@ -15,8 +15,6 @@ class _C {
   static const textMuted = Color(0xFF7E8882);
 }
 
-// خرائط: النص العربي المعروض للمستخدم <-> القيمة الإنجليزية المخزنة
-// بقاعدة البيانات (نفس أسماء الـ enums بجدولي dars/halaqas الحقيقيين).
 const _attendanceOptions = {'حضوري': 'inPerson', 'أونلاين': 'online'};
 const _statusOptions = {
   'مفتوح': 'open',
@@ -33,8 +31,6 @@ const _ageOptions = {
 };
 const _feeOptions = {'مجاني': 'free', 'رسوم رمزية': 'symbolic'};
 
-/// فورم تسجيل بيانات دار جديد — نفس أسئلة وترتيب نموذج "تعبئة بيانات
-/// مِشكاة" بالضبط، بس يذهب كطلب معلّق بانتظار موافقة الإدارة بدل الإيميل.
 class DarSubmissionScreen extends StatefulWidget {
   const DarSubmissionScreen({super.key});
 
@@ -52,8 +48,8 @@ class _DarSubmissionScreenState extends State<DarSubmissionScreen> {
   final _website = TextEditingController();
   final _description = TextEditingController();
 
-  String? _attendance; // عربي: حضوري / أونلاين
-  String? _status; // عربي: مفتوح / قريبًا / مغلق
+  String? _attendance;
+  String? _status;
   final Set<String> _categories = {};
   final Set<String> _times = {};
   final Set<String> _ages = {};
@@ -134,8 +130,6 @@ class _DarSubmissionScreenState extends State<DarSubmissionScreen> {
       if (mounted) setState(() => _submitting = false);
     }
   }
-
-  // ---------------- عناصر واجهة مساعدة ----------------
 
   Widget _card({required String title, String? hint, required List<Widget> children}) {
     return Container(
@@ -440,8 +434,6 @@ class _DarSubmissionScreenState extends State<DarSubmissionScreen> {
   }
 }
 
-/// شريحة اختيار واحدة (تُستخدم لكل من الاختيار الفردي والمتعدد)، نفس
-/// شكل ".choice" بالفورم الأصلي.
 class _ChoicePill extends StatelessWidget {
   final String label;
   final bool selected;

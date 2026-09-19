@@ -104,8 +104,7 @@ class _LoginScreenState extends State<LoginScreen>
     }
 
     if (widget.skipIntro) {
-      // قادم من شاشة أخرى (مثل إنشاء حساب) — نتخطى نص الآية وأنيميشن الفانوس
-      // ونعرض نموذج تسجيل الدخول مباشرة.
+
       _introCtrl.value = 1.0;
       _entry.value = 1.0;
     } else {
