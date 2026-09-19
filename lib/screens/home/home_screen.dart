@@ -914,6 +914,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 child: PageView.builder(
                                   controller: registrationController,
                                   physics: const PageScrollPhysics(),
+                                  padEnds: false,
                                   itemCount: registrationOpen.length,
                                   itemBuilder: (context, index) {
                                     final item = registrationOpen[index];
@@ -1345,6 +1346,12 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
+/// شريط التنقل السفلي.
+/// تنبيه: الارتفاع صريح وثابت (68 + المسافة الآمنة الفعلية للجهاز) بدل ما
+/// نعتمد على SafeArea لوحده يحدد الحجم، لأن ترك الـ Container بدون أي
+/// height صريح تسبب بمشكلة تخطيط غير متوقعة (اختفاء المحتوى وانزياح
+/// الشريط) على بعض الأجهزة. استخدام MediaQuery.padding.bottom مباشرة
+/// أكثر استقرارًا.
 class _BottomNavBar extends StatelessWidget {
   final List<DarModel> dars;
 
@@ -1352,6 +1359,8 @@ class _BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+
     final items = [
       {'title': 'الفرص', 'icon': Icons.auto_awesome_outlined},
       {'title': 'تبرع', 'icon': Icons.volunteer_activism_outlined},
@@ -1362,82 +1371,82 @@ class _BottomNavBar extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(
-        height: 88,
+        height: 68 + bottomInset,
         decoration: const BoxDecoration(
           color: _MishkahColors.surface,
           border: Border(
             top: BorderSide(color: _MishkahColors.border, width: 0.8),
           ),
         ),
-        child: SafeArea(
-          top: false,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: bottomInset, top: 8),
           child: Row(
             children: items.map((item) {
-              final isHome = item['title'] == 'الرئيسية';
-              return Expanded(
-                child: InkWell(
-                  onTap: () {
-                    if (item['title'] == 'الفرص') {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const OpportunitiesScreen()));
-                    }
-                    if (item['title'] == 'محاضرات') {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const LecturesScreen()));
-                    }
-                    if (item['title'] == 'تبرع') {
-                      if (dars.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('لم يتم تحميل بيانات الدور بعد')),
-                        );
-                        return;
+                final isHome = item['title'] == 'الرئيسية';
+                return Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      if (item['title'] == 'الفرص') {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const OpportunitiesScreen()));
                       }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => DonationScreen(dar: dars.first)),
-                      );
-                    }
-                  },
-                  child: Center(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      curve: Curves.easeOut,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: isHome ? _MishkahColors.gold.withOpacity(0.10) : Colors.transparent,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isHome ? _MishkahColors.gold.withOpacity(0.16) : Colors.transparent,
+                      if (item['title'] == 'محاضرات') {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const LecturesScreen()));
+                      }
+                      if (item['title'] == 'تبرع') {
+                        if (dars.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('لم يتم تحميل بيانات الدور بعد')),
+                          );
+                          return;
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => DonationScreen(dar: dars.first)),
+                        );
+                      }
+                    },
+                    child: Center(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        curve: Curves.easeOut,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: isHome ? _MishkahColors.gold.withOpacity(0.10) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isHome ? _MishkahColors.gold.withOpacity(0.16) : Colors.transparent,
+                          ),
                         ),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            item['icon'] as IconData,
-                            size: 23,
-                            color: isHome ? _MishkahColors.goldLight : _MishkahColors.textMuted,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item['title'] as String,
-                            textDirection: TextDirection.rtl,
-                            style: TextStyle(
-                              fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
-                              fontSize: 10.5,
-                              fontWeight: isHome ? FontWeight.w700 : FontWeight.w500,
-                              color: isHome ? _MishkahColors.ivory : _MishkahColors.textMuted,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              item['icon'] as IconData,
+                              size: 23,
+                              color: isHome ? _MishkahColors.goldLight : _MishkahColors.textMuted,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              item['title'] as String,
+                              textDirection: TextDirection.rtl,
+                              style: TextStyle(
+                                fontFamily: GoogleFonts.ibmPlexSansArabic().fontFamily,
+                                fontSize: 10.5,
+                                fontWeight: isHome ? FontWeight.w700 : FontWeight.w500,
+                                color: isHome ? _MishkahColors.ivory : _MishkahColors.textMuted,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
 
