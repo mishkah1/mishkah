@@ -453,13 +453,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       }
     }
 
-    if (items.length < 4) {
+    if (items.length < 8) {
       final usedAttendance = <AttendanceType>{};
       for (final item in items) {
         usedAttendance.add(item.attendance);
       }
 
-      while (items.length < 4) {
+      while (items.length < 8) {
         final fallback = chooseHalaqa(
           halaqasByStatus(RegistrationStatus.open),
           usedIds,

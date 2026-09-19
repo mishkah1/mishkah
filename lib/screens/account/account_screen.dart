@@ -8,10 +8,20 @@ import 'package:mishkah/screens/menu/about_us_screen.dart';
 import 'package:mishkah/screens/menu/contact_us_screen.dart';
 import 'package:mishkah/screens/menu/feq_screen.dart';
 import 'package:mishkah/screens/menu/settings_screen.dart';
+import 'package:mishkah/screens/account/dar_submission_screen.dart';
+import 'package:mishkah/screens/account/halaqa_submission_screen.dart';
+import 'package:mishkah/screens/account/my_submissions_screen.dart';
+import 'package:mishkah/screens/account/admin_review_screen.dart';
+import 'package:mishkah/repositories/submission_repository.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
 
+  @override
+  State<AccountScreen> createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> {
   // ── هوية مِشكاة ──
   static const _background = Color(0xFF0D1713);
   static const _surface = Color(0xFF15221C);
@@ -22,6 +32,45 @@ class AccountScreen extends StatelessWidget {
   static const _sand = Color(0xFFC0A06A);
   static const _ivory = Color(0xFFF4EFE3);
   static const _textSecondary = Color(0xFFA8B0AA);
+
+  final _submissionRepo = SubmissionRepository();
+  late Future<String> _roleFuture;
+  bool _upgrading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _roleFuture = _submissionRepo.fetchCurrentUserRole();
+  }
+
+  Future<void> _requestSubmitterRole() async {
+    setState(() => _upgrading = true);
+    try {
+      await _submissionRepo.becomeSubmitter();
+      setState(() {
+        _roleFuture = _submissionRepo.fetchCurrentUserRole();
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: _surfaceRaised,
+          content: Text('تم تفعيل حسابك كصاحب دار/حلقة',
+              style: GoogleFonts.ibmPlexSansArabic(color: _ivory)),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: _surfaceRaised,
+          content: Text('تعذر التسجيل كصاحب دار/حلقة، حاول مرة أخرى',
+              style: GoogleFonts.ibmPlexSansArabic(color: _ivory)),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _upgrading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +197,97 @@ class AccountScreen extends StatelessWidget {
                   },
                 ),
 
+                // ── قسم صاحب الدار/الحلقة: يظهر فقط لمن يحتاجه ──
+                // مستخدم عادي (باحث عن حلقة): يشوف خيار تفعيل بسيط فقط.
+                // صاحب دار/حلقة (submitter) أو إدارة (admin): يشوف قسم
+                // "تسجيل بيانات" و"طلباتي" كامل. الإدارة تشوف زيادة
+                // "مراجعة الطلبات".
+                FutureBuilder<String>(
+                  future: _roleFuture,
+                  builder: (context, snap) {
+                    final role = snap.data;
+                    if (role == null) return const SizedBox.shrink();
+
+                    if (role == 'user') {
+                      return Column(
+                        children: [
+                          const SizedBox(height: 26),
+                          Container(height: 1, color: _border),
+                          const SizedBox(height: 22),
+                          _AccountOption(
+                            icon: Icons.storefront_outlined,
+                            title: _upgrading
+                                ? 'جارٍ التسجيل...'
+                                : 'أنا صاحب دار أو حلقة',
+                            onTap: _upgrading ? () {} : _requestSubmitterRole,
+                          ),
+                        ],
+                      );
+                    }
+
+                    return Column(
+                      children: [
+                        const SizedBox(height: 26),
+                        _SectionTitle(title: 'تسجيل بيانات دار أو حلقة'),
+                        const SizedBox(height: 12),
+                        _AccountOption(
+                          icon: Icons.home_work_outlined,
+                          title: 'تسجيل بيانات دار',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const DarSubmissionScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        _AccountOption(
+                          icon: Icons.menu_book_outlined,
+                          title: 'تسجيل بيانات حلقة',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const HalaqaSubmissionScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        _AccountOption(
+                          icon: Icons.pending_actions_outlined,
+                          title: 'طلباتي',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const MySubmissionsScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        if (role == 'admin') ...[
+                          const SizedBox(height: 12),
+                          _AccountOption(
+                            icon: Icons.fact_check_outlined,
+                            title: 'مراجعة الطلبات',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const AdminReviewScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+
                 const SizedBox(height: 26),
                 _SectionTitle(title: 'الدعم والمعلومات'),
                 const SizedBox(height: 12),
@@ -246,12 +386,12 @@ class _AccountOption extends StatelessWidget {
     required this.onTap,
   });
 
-  static const _surface = AccountScreen._surface;
-  static const _surfaceRaised = AccountScreen._surfaceRaised;
-  static const _border = AccountScreen._border;
-  static const _gold = AccountScreen._gold;
-  static const _ivory = AccountScreen._ivory;
-  static const _sand = AccountScreen._sand;
+  static const _surface = _AccountScreenState._surface;
+  static const _surfaceRaised = _AccountScreenState._surfaceRaised;
+  static const _border = _AccountScreenState._border;
+  static const _gold = _AccountScreenState._gold;
+  static const _ivory = _AccountScreenState._ivory;
+  static const _sand = _AccountScreenState._sand;
 
   @override
   Widget build(BuildContext context) {

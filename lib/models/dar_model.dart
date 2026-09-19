@@ -8,8 +8,9 @@ class DarModel {
   final String id;
   final String name;
   final String address;
-  final double latitude;
-  final double longitude;
+  final double? latitude;
+  final double? longitude;
+  final String? mapsLink;
   final String phoneNumber;
   final String? websiteUrl;
   final String? imageUrl;
@@ -46,8 +47,9 @@ class DarModel {
     required this.id,
     required this.name,
     required this.address,
-    required this.latitude,
-    required this.longitude,
+    this.latitude,
+    this.longitude,
+    this.mapsLink,
     required this.phoneNumber,
     this.websiteUrl,
     this.imageUrl,
@@ -71,6 +73,9 @@ class DarModel {
   bool get hasDonationLink =>
       donationLink != null && donationLink!.trim().isNotEmpty;
 
+  /// يرجع true إذا كان للدار رابط خرائط قوقل فعلي.
+  bool get hasMapsLink => mapsLink != null && mapsLink!.trim().isNotEmpty;
+
   /// يرجع true إذا كان التسجيل بالدار مفتوح حاليا.
   bool get isRegistrationOpen =>
       registrationStatus == DarRegistrationStatus.open;
@@ -92,8 +97,9 @@ class DarModel {
       id: json['id'] as String,
       name: json['name'] as String,
       address: json['address'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      mapsLink: json['maps_link'] as String?,
       phoneNumber: json['phone_number'] as String,
       websiteUrl: json['website_url'] as String?,
       imageUrl: json['image_url'] as String?,
@@ -124,6 +130,7 @@ class DarModel {
       'address': address,
       'latitude': latitude,
       'longitude': longitude,
+      'maps_link': mapsLink,
       'phone_number': phoneNumber,
       'website_url': websiteUrl,
       'image_url': imageUrl,
